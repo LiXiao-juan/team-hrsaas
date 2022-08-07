@@ -84,6 +84,7 @@ export default {
   // background: #5373e0;
   background: url("../../assets/bg.png") no-repeat;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  background-size: cover;
 
   .hamburger-container {
     line-height: 46px;
