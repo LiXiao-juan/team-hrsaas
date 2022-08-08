@@ -7,6 +7,7 @@
           <el-input
             v-model="formInline.policyName"
             placeholder="请输入"
+            clearable
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -30,14 +31,14 @@
       <el-table :data="tableData" style="width: 100%" class="table">
         <el-table-column type="index" label="序号" width="100px">
         </el-table-column>
-        <el-table-column prop="policyName" label="策略名称" width="200px">
+        <el-table-column prop="policyName" label="策略名称" width="300px">
         </el-table-column>
-        <el-table-column prop="discount" label="策略方案" width="200px">
+        <el-table-column prop="discount" label="策略方案" width="300px">
         </el-table-column>
         <el-table-column
           prop="createTime"
           label="创建日期"
-          width="300px"
+          width="400px"
           :formatter="creatTime"
         >
         </el-table-column>
@@ -192,6 +193,12 @@ export default {
     padding: 10px 0px 9px;
     background: rgb(243, 246, 251);
     font-weight: 500;
+    text-align: left;
+    color: rgb(102, 102, 102);
+  }
+  ::v-deep .el-table td {
+    height: 47px;
+    padding: 2px 0px;
     text-align: left;
     color: rgb(102, 102, 102);
   }
