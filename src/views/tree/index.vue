@@ -4,16 +4,14 @@
     <Search @searchList="searchList"></Search>
     <!-- 下半区域 -->
     <div class="result">
-      <el-button size="small" class="new-button" @click="popup = true">
+      <el-button size="small" class="new-button" @click="isShowPop">
         <i class="el-icon-circle-plus-outline"></i>
         新建
       </el-button>
 
-      <!--工单配置  -->
-      <el-button size="small" class="deploy-button"> 工单配置 </el-button>
       <br />
       <!-- 新建的弹框组件 -->
-      <AddTask :Visible="popup"></AddTask>
+      <AddTask :Visible="popup" ref="addTask" :isRepertoire="false"></AddTask>
       <!-- 表格区域 -->
       <Table :taskList="taskList"></Table>
 
@@ -25,7 +23,7 @@
             layout="prev, pager, next"
             :total="total"
             small
-            @current-change="laypage"
+            @current-change="layPage"
           >
           </el-pagination>
         </center>
@@ -35,13 +33,12 @@
 </template>
 
 <script>
-import dayjs from "dayjs";
 // import { getList } from "@/api/table";
 import Table from "@/components/table";
 import Search from "@/components/Search";
 import AddTask from "../table/components/addtasks.vue";
 import { mapActions, mapState } from "vuex";
-import { getTasksList } from "@/api/tickets";
+import { getTasksList, createTask } from "@/api/tickets";
 export default {
   data() {
     return {
@@ -50,6 +47,8 @@ export default {
       totalCount: 0,
       status: "",
       popup: false,
+      allocation: false,
+      num: 1,
     };
   },
   components: {
@@ -58,18 +57,18 @@ export default {
     AddTask,
   },
   created() {
-    this.getTaskssList();
+    this.layPage();
   },
   methods: {
     ...mapActions("tickets", ["getTaskList", "setTasksList"]),
     // 获取工单列表
-    async getTaskssList() {
-      await this.getTaskList();
-      this.taskList = this.$store.state.tickets.taskList;
-    },
+    // async getTaskssList() {
+    //   await this.getTaskList();
+    //   this.taskList = this.$store.state.tickets.taskList;
+    // },
 
     // 分页
-    async laypage(num) {
+    async layPage(num) {
       const { data } = await getTasksList({
         pageIndex: num,
         pageSize: 10,
@@ -77,6 +76,10 @@ export default {
         status: this.status,
       });
       this.taskList = data.currentPageRecords;
+    },
+    isShowPop() {
+      this.popup = true;
+      this.$refs.addTask.getTaskType();
     },
     // 搜索列表
     searchList(list, status) {
