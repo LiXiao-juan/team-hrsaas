@@ -4,10 +4,15 @@
     <div class="search">
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="策略搜索:">
-          <el-input v-model="formInline.user" placeholder="请输入"></el-input>
+          <el-input
+            v-model="formInline.policyName"
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="SearchPolicy"
+            >查询</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -55,10 +60,11 @@
     <Adddialog
       ref="AddLog"
       :visiable.sync="dialogVisible"
+      :visiabledia.sync="logVisible"
       @addSuccess="getPolicy"
     ></Adddialog>
     <!-- 查看详情弹窗组件 -->
-    <Detaildialog :visiable.sync="disVisible" :rowList="rowList"></Detaildialog>
+    <Detaildialog ref="Detail" :visiable.sync="disVisible"></Detaildialog>
   </div>
 </template>
 
@@ -71,13 +77,14 @@ export default {
   data() {
     return {
       formInline: {
-        user: "",
+        pageIndex: 1,
+        pageSize: 10,
+        policyName: "",
       },
       tableData: [],
       dialogVisible: false,
+      logVisible: false,
       disVisible: false,
-      // // 要修改的一行数据
-      rowList: {},
     };
   },
   created() {
@@ -95,17 +102,19 @@ export default {
     // 展示添加弹层
     showAdd() {
       this.dialogVisible = true;
+      this.logVisible = false;
     },
     // 展示修改弹层
     showUpdate(val) {
       this.dialogVisible = true;
-      // console.log(val);
-      this.rowList = val;
-      console.log(this.rowList);
+      console.log(val);
+      this.logVisible = true;
+      this.$refs.AddLog.getPolicy(val);
     },
     // 展示查看详情弹层
-    showDetail() {
+    showDetail(val) {
       this.disVisible = true;
+      this.$refs.Detail.getDetailRow(val);
     },
     async onRemove(val) {
       try {
@@ -119,6 +128,12 @@ export default {
         await DeletePolicyApi(val.policyId);
         this.getPolicy();
       } catch (error) {}
+    },
+    //头部搜索按钮
+    async SearchPolicy() {
+      const res = await getPolicyApi(this.formInline);
+      console.log(res);
+      this.tableData = res.data.currentPageRecords;
     },
   },
   components: {
@@ -171,6 +186,14 @@ export default {
   }
   .del {
     color: #ff5a5a;
+  }
+  ::v-deep th {
+    line-height: 1.15;
+    padding: 10px 0px 9px;
+    background: rgb(243, 246, 251);
+    font-weight: 500;
+    text-align: left;
+    color: rgb(102, 102, 102);
   }
 }
 </style>

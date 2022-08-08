@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="新增策略"
+    :title="dialogTitle"
     :visible="visiable"
     width="630px"
     @close="onClose"
@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       formData: {
+        policyId: "",
         policyName: "", //策略名称
         discount: "", //策略方案
       },
@@ -53,20 +54,23 @@ export default {
     };
   },
   props: {
+    // 控制新增的弹窗显隐
     visiable: {
       type: Boolean,
       required: true,
     },
-    rowList: {
-      type: Object,
+    // 控制修改的弹窗显隐
+    visiabledia: {
+      type: Boolean,
+      required: true,
     },
   },
 
   created() {},
   computed: {
-    // dialogTitle() {
-    //   return this.rowList.policyId ? "修改策略" : "新增策略";
-    // },
+    dialogTitle() {
+      return this.visiabledia ? "修改策略" : "新增策略";
+    },
   },
 
   methods: {
@@ -82,12 +86,8 @@ export default {
     async onSave() {
       // 对整个表单进行校验的方法
       await this.$refs.form.validate();
-      if (this.rowList.policyId) {
-        await EditPolicyApi(
-          this.rowList.policyId,
-          this.rowList.policyName,
-          this.rowList.discount
-        );
+      if (this.visiabledia) {
+        await EditPolicyApi(this.formData.policyId,this.formData.policyName, this.formData.discount);
         this.$message.success("修改策略成功");
         this.onClose();
         this.$emit("addSuccess");
@@ -97,6 +97,11 @@ export default {
         this.onClose();
         this.$emit("addSuccess");
       }
+    },
+    async getPolicy(val) {
+      this.formData.policyName = val.policyName;
+      this.formData.discount = val.discount;
+      this.formData.policyId=val.policyId;
     },
   },
 };
