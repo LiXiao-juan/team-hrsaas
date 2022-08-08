@@ -23,7 +23,13 @@
       :header-cell-style="{ background: 'rgb(243, 246, 251)' }"
       class="table"
     >
-      <el-table-column type="index" label="序号" width="80"> </el-table-column>
+      <el-table-column
+        label="序号"
+        width="80"
+        type="index"
+        :index="table_index"
+      >
+      </el-table-column>
       <el-table-column prop="userName" label="人员名称" width="365">
       </el-table-column>
       <el-table-column prop="regionName" label="归属区域" width="365">
@@ -33,16 +39,22 @@
       <el-table-column prop="mobile" label="联系电话" width="365">
       </el-table-column>
       <el-table-column label="操作" width="150">
-        <el-button
-          type="text"
-          size="medium"
-          style="color: #5f84ff"
-          @click="editInfo"
-          >修改</el-button
-        >
-        <el-button type="text" size="medium" style="color: #ff5a5a"
-          >删除</el-button
-        >
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="medium"
+            style="color: #5f84ff"
+            @click="editInfo(scope.$index, scope.row)"
+            >修改</el-button
+          >
+          <el-button
+            type="text"
+            size="medium"
+            style="color: #ff5a5a"
+            @click="delInfo(scope.$index, scope.row)"
+            >删除</el-button
+          >
+        </template>
       </el-table-column>
     </el-table>
     <Pagination
@@ -53,7 +65,12 @@
       @pageDown="getPersonnelList"
       @pageUp="getPersonnelList"
     />
-    <FormDialog ref="dialog" :roleList="roleList" :regionList="regionList" />
+    <FormDialog
+      ref="dialog"
+      :roleList="roleList"
+      :regionList="regionList"
+      :title="title"
+    />
   </div>
 </template>
 
@@ -61,8 +78,16 @@
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 import Pagination from "@/components/Pagination";
-import FormDialog from "@/views/user/FormDialog";
-import { getPersonnelList, getRegionList, getRoleList } from "@/api/personnel";
+import FormDialog from "@/views/user/components/FormDialog";
+import {
+  getPersonnelList,
+  getRegionList,
+  getRoleList,
+  imgUpload,
+  getPersonnel,
+  editPersonnel,
+  delPersonnel,
+} from "@/api/personnel";
 export default {
   components: {
     InputField,
@@ -86,6 +111,11 @@ export default {
       /* 控制上下页按钮样式 */
       upDisabled: false,
       downDisabled: false,
+      /* 实现分页 */
+      pageParams: {
+        page: 1,
+        pagesize: 10,
+      },
       /* 角色列表 */
       roleList: [],
       /* 区域列表 */
@@ -94,6 +124,9 @@ export default {
         pageIndex: 1,
         pageSize: 100000,
       },
+      title: "",
+      /* 选中行信息 */
+      currentData: {},
     };
   },
   created() {
@@ -132,6 +165,9 @@ export default {
         console.log(error);
       }
     },
+    table_index(index) {
+      return index + (this.params.pageIndex - 1) * this.params.pageSize + 1;
+    },
     /* 根据条件筛选 */
     searchFn() {
       this.params.userName = this.$refs.inputContent.input;
@@ -157,6 +193,7 @@ export default {
     },
     /* 新增人员信息 */
     addInfo() {
+      this.title = "新增人员";
       this.$refs.dialog.dialogFormVisible =
         !this.$refs.dialog.dialogFormVisible;
       console.log("add");
@@ -164,8 +201,25 @@ export default {
       this.getRegionList();
     },
     /* 编辑人员信息 */
-    editInfo() {
-      console.log("edit");
+    async editInfo(index, row) {
+      try {
+        this.title = "编辑人员";
+        this.getRoleList();
+        this.getRegionList();
+        const res = await getPersonnel(row.id);
+        this.$refs.dialog.form = res.data;
+        this.$refs.dialog.dialogFormVisible =
+          !this.$refs.dialog.dialogFormVisible;
+      } catch (error) {}
+    },
+    /* 删除人员信息 */
+    async delInfo(index, row) {
+      try {
+        await delPersonnel(row.id);
+        this.getPersonnelList()
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };
