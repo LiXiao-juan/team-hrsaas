@@ -52,6 +52,7 @@ export const addPersonnel = (data) => {
   return request({
     method: "POST",
     url: "/user-service/user",
+    data,
   });
 };
 
@@ -70,10 +71,11 @@ export const getPersonnel = (id) => {
  * 修改人员
  * return promise
  */
-export const editPersonnel = (id) => {
+export const editPersonnel = (id, data) => {
   return request({
     method: "PUT",
     url: `/user-service/user/${id}`,
+    data,
   });
 };
 
@@ -85,5 +87,6 @@ export const delPersonnel = (id) => {
   return request({
     method: "DELETE",
     url: `/user-service/user/${id}`,
+    data,
   });
 };

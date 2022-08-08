@@ -70,6 +70,7 @@
       :roleList="roleList"
       :regionList="regionList"
       :title="title"
+      :currentId="currentId"
     />
   </div>
 </template>
@@ -85,7 +86,6 @@ import {
   getRoleList,
   imgUpload,
   getPersonnel,
-  editPersonnel,
   delPersonnel,
 } from "@/api/personnel";
 export default {
@@ -125,8 +125,8 @@ export default {
         pageSize: 100000,
       },
       title: "",
-      /* 选中行信息 */
-      currentData: {},
+      /* 选中行人员id */
+      currentId: "",
     };
   },
   created() {
@@ -194,16 +194,35 @@ export default {
     /* 新增人员信息 */
     addInfo() {
       this.title = "新增人员";
+      this.$refs.dialog.form = {
+        userName: "",
+        roleId: "",
+        mobile: "",
+        regionId: "",
+        regionName: "",
+        image: "",
+        status: false,
+      };
       this.$refs.dialog.dialogFormVisible =
         !this.$refs.dialog.dialogFormVisible;
       console.log("add");
       this.getRoleList();
       this.getRegionList();
     },
-    /* 编辑人员信息 */
+    /* 编辑人员信息回显 */
     async editInfo(index, row) {
       try {
         this.title = "编辑人员";
+        this.currentId = row.id;
+        this.$refs.dialog.form = {
+          userName: "",
+          roleId: "",
+          mobile: "",
+          regionId: "",
+          regionName: "",
+          image: "",
+          status: false,
+        };
         this.getRoleList();
         this.getRegionList();
         const res = await getPersonnel(row.id);
@@ -212,11 +231,15 @@ export default {
           !this.$refs.dialog.dialogFormVisible;
       } catch (error) {}
     },
+    /* 编辑人员信息上传api */
+    // async upDataInfo (){
+    //   this.
+    // }
     /* 删除人员信息 */
     async delInfo(index, row) {
       try {
         await delPersonnel(row.id);
-        this.getPersonnelList()
+        this.getPersonnelList();
       } catch (error) {
         console.log(error);
       }

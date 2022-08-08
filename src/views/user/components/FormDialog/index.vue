@@ -82,6 +82,7 @@
 </template>
 
 <script>
+import { addPersonnel, editPersonnel } from "@/api/personnel";
 export default {
   props: {
     roleList: {
@@ -93,6 +94,9 @@ export default {
       required: true,
     },
     title: {
+      type: String,
+    },
+    currentId: {
       type: String,
     },
   },
@@ -174,8 +178,12 @@ export default {
     async onSave() {
       await this.$refs.form.validate();
       try {
-        // if (this.form.) {
-        // }
+        if (this.title === "编辑人员") {
+          await editPersonnel(this.currentId, this.form);
+          this.$message.success("修改信息成功");
+        } else {
+          await addPersonnel(this.form);
+        }
       } catch (error) {}
       this.dialogFormVisible = false;
     },
