@@ -100,7 +100,6 @@ export default {
     };
   },
   components: {
-    Footer,
   },
   created() {
     this.SearchOrder();
