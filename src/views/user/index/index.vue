@@ -1,14 +1,18 @@
 <template>
   <div class="business-container">
     <div class="business-search">
-      <span>人员搜索:</span><InputField /><CustomButton
+      <span>人员搜索:</span><InputField ref="inputContent" /><CustomButton
         class="btn"
         iconType="el-icon-search"
+        @click.native="searchFn"
         >查询</CustomButton
       >
     </div>
     <div class="business-result">
-      <CustomButton iconType="el-icon-circle-plus-outline" :styles="newButton"
+      <CustomButton
+        iconType="el-icon-circle-plus-outline"
+        :styles="newButton"
+        @click.native="addInfo"
         >新建</CustomButton
       >
     </div>
@@ -29,7 +33,16 @@
       <el-table-column prop="mobile" label="联系电话" width="365">
       </el-table-column>
       <el-table-column label="操作" width="150">
-        <el-button type="text" size="medium">查看详情</el-button>
+        <el-button
+          type="text"
+          size="medium"
+          style="color: #5f84ff"
+          @click="editInfo"
+          >修改</el-button
+        >
+        <el-button type="text" size="medium" style="color: #ff5a5a"
+          >删除</el-button
+        >
       </el-table-column>
     </el-table>
     <Pagination
@@ -40,6 +53,7 @@
       @pageDown="getPersonnelList"
       @pageUp="getPersonnelList"
     />
+    <FormDialog ref="dialog" :roleList="roleList" :regionList="regionList" />
   </div>
 </template>
 
@@ -47,12 +61,14 @@
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 import Pagination from "@/components/Pagination";
-import { getPersonnelList } from "@/api/personnel";
+import FormDialog from "@/views/user/FormDialog";
+import { getPersonnelList, getRegionList, getRoleList } from "@/api/personnel";
 export default {
   components: {
     InputField,
     CustomButton,
     Pagination,
+    FormDialog,
   },
   data() {
     return {
@@ -70,6 +86,14 @@ export default {
       /* 控制上下页按钮样式 */
       upDisabled: false,
       downDisabled: false,
+      /* 角色列表 */
+      roleList: [],
+      /* 区域列表 */
+      regionList: [],
+      paramsRegion: {
+        pageIndex: 1,
+        pageSize: 100000,
+      },
     };
   },
   created() {
@@ -97,14 +121,51 @@ export default {
         ) {
           this.downDisabled = true;
           this.upDisabled = false;
-        }
-        if (this.params.pageIndex === 1) {
+        } else if (this.params.pageIndex === 1) {
           this.downDisabled = false;
           this.upDisabled = true;
+        } else {
+          this.downDisabled = false;
+          this.upDisabled = false;
         }
       } catch (error) {
         console.log(error);
       }
+    },
+    /* 根据条件筛选 */
+    searchFn() {
+      this.params.userName = this.$refs.inputContent.input;
+      this.getPersonnelList(this.params);
+    },
+    /* 获取角色列表 */
+    async getRoleList() {
+      try {
+        const res = await getRoleList();
+        this.roleList = res.data;
+        console.log(this.roleList);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    /* 获取区域列表 */
+    async getRegionList() {
+      try {
+        const res = await getRegionList(this.paramsRegion);
+        this.regionList = res.data.currentPageRecords;
+        console.log(this.regionList);
+      } catch (error) {}
+    },
+    /* 新增人员信息 */
+    addInfo() {
+      this.$refs.dialog.dialogFormVisible =
+        !this.$refs.dialog.dialogFormVisible;
+      console.log("add");
+      this.getRoleList();
+      this.getRegionList();
+    },
+    /* 编辑人员信息 */
+    editInfo() {
+      console.log("edit");
     },
   },
 };
