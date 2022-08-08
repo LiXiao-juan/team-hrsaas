@@ -7,18 +7,22 @@ export default {
     taskObj: {},
     total: 0,
     taskList: [],
+    taskDetails: {},
   },
   mutations: {
     SETTASKLIST(state, payload) {
       state.taskObj = payload;
       state.total = +payload.totalCount;
       state.taskList = payload.currentPageRecords;
-    }
+    },
+    SETTASKDETAILS(state, payload) {
+      state.taskDetails = payload;
+    },
   },
   actions: {
     async getTaskList({ commit }) {
       const { data } = await getTasksList();
       commit("SETTASKLIST", data);
-    }
+    },
   },
 };
