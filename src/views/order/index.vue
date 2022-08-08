@@ -7,17 +7,19 @@
           <el-input
             v-model="formInline.user"
             placeholder="请输入订单编号"
+            clearable
           ></el-input>
         </el-form-item>
 
         <el-form-item label="选择日期:">
           <el-date-picker
             class="picker"
-            v-model="value1"
+            v-model="value"
             type="daterange"
-            range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
+            :default-time="['00:00:00', '23:59:59']"
+            clearable
           >
           </el-date-picker>
         </el-form-item>
@@ -33,7 +35,7 @@
       <el-table :data="tableData" style="width: 100%" class="table">
         <el-table-column type="index" label="序号" width="100px">
         </el-table-column>
-        <el-table-column prop="orderNo" label="订单编号" width="200px">
+        <el-table-column prop="orderNo" label="订单编号" width="270px">
         </el-table-column>
         <el-table-column prop="skuName" label="商品名称" width="200px">
         </el-table-column>
@@ -63,7 +65,7 @@
           </template>
         </el-table-column>
       </el-table>
-
+      <!-- 分页 -->
       <el-row type="flex" align="middle" class="footer">
         <el-col class="text"
           >共{{ pagedate.totalCount }}条记录 第{{ pagedate.pageIndex }}/{{
@@ -77,11 +79,14 @@
           </el-row>
         </el-col>
       </el-row>
+      <!-- 查看详情弹窗 -->
+      <Detail ref="deTail" :visible.sync="dialogTableVisible"></Detail>
     </div>
   </div>
 </template>
 
 <script>
+import Detail from "@/views/order/components/Detail.vue";
 import dayjs from "dayjs";
 import { getSearchOrder } from "@/api/order";
 export default {
@@ -90,23 +95,28 @@ export default {
       formInline: {
         user: "",
       },
-      value1: "",
+      value: "",
       tableData: [],
       pagedate: {
         pageIndex: 1,
         pageSize: 10,
-        totalPage:"",
+        totalPage: "",
       },
+      dialogTableVisible: false,
     };
   },
   components: {
-    Footer,
+    Detail,
   },
   created() {
     this.SearchOrder();
   },
   methods: {
-    showDetail() {},
+    showDetail(val) {
+      this.dialogTableVisible = true;
+      // console.log(val);
+      this.$refs.deTail.getRowDetail(val);
+    },
     async SearchOrder() {
       const res = await getSearchOrder();
       // console.log(res);
@@ -121,19 +131,9 @@ export default {
       return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
     },
     // 上一页
-    pageUp() {
-      if (this.pagedate.pageIndex > 1) {
-        this.pagedate.pageIndex--;
-        this.SearchOrder();
-      }
-    },
+    pageUp() {},
     // 下一页
-    pageDown() {
-      if (this.pagedate.pageIndex < this.pagedate.totalPage) {
-        this.pagedate.pageIndex++;
-        this.SearchOrder();
-      }
-    },
+    pageDown() {},
   },
 };
 </script>
@@ -167,8 +167,16 @@ export default {
     margin-top: 22px;
   }
 }
-.main {
+::v-deep .main {
   background-color: #fff;
+}
+::v-deep th {
+  line-height: 1.15;
+  padding: 10px 0px 9px;
+  background: rgb(243, 246, 251);
+  font-weight: 500;
+  text-align: left;
+  color: rgb(102, 102, 102);
 }
 .footer {
   padding-left: 30px;
