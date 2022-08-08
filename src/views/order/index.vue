@@ -24,7 +24,9 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="SesrchFn"
+            >查询</el-button
+          >
         </el-form-item>
       </el-form>
     </div>
@@ -102,6 +104,13 @@ export default {
         pageSize: 10,
         totalPage: "",
       },
+      searchDetail: {
+        pageIndex: 1,
+        pageSize: 10,
+        orderNo: "",
+        startDate: "",
+        endDate: "",
+      },
       dialogTableVisible: false,
     };
   },
@@ -134,6 +143,9 @@ export default {
     pageUp() {},
     // 下一页
     pageDown() {},
+    SesrchFn() {
+      this.searchDetail.orderNo = this.formInline.user;
+    },
   },
 };
 </script>
