@@ -38,11 +38,14 @@ export function DeletePolicyApi(policyId) {
  * @param  {String,Number} policyid 要修改的策略id
  * @returns
  */
-export function EditPolicyApi(data) {
+export function EditPolicyApi(policyId, policyName, discount) {
   return request({
-    url: "/vm-service/policy/",
+    url: "/vm-service/policy/" + policyId,
     method: "PUT",
-    data,
+    data: {
+      policyName,
+      discount,
+    },
   });
 }
 /**
@@ -53,5 +56,6 @@ export function EditPolicyApi(data) {
 export function getVmList(policyId) {
   return request({
     url: "/vm-service/policy/vmList/" + policyId,
+    method: "GET",
   });
 }
