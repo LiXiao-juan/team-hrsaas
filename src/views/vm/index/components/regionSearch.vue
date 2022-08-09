@@ -2,7 +2,7 @@
   <div>
     <div class="search">
       <el-form :inline="true" class="demo-form-inline">
-        <el-form-item label="区域搜索:">
+        <el-form-item label="设备编号:">
           <el-input v-model="addressSearch" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item>
@@ -20,20 +20,18 @@
 </template>
 
 <script>
+// import { getVmList } from "@/api/vm";
 export default {
   data() {
     return {
       addressSearch: "",
     };
   },
-
   created() {},
-
   methods: {
     onSearch() {
       if (this.addressSearch.trim()) {
         this.$emit("OnSearch", this.addressSearch.trim());
-        this.$message.success("查询成功");
       } else {
         this.$emit("OnSearch", this.addressSearch.trim());
       }
@@ -51,21 +49,17 @@ export default {
   margin-bottom: 20px;
   padding-left: 17px;
   background-color: #fff;
-
   .el-form-item {
     margin-bottom: 0;
   }
-
   .el-form-item__label {
     line-height: 36px;
   }
-
   ::v-deep .el-input__inner {
     padding-right: 30px;
     height: 36px;
     line-height: 36px;
   }
-
   .btnInquire {
     align-items: center;
     min-width: 80px;
@@ -73,7 +67,6 @@ export default {
     padding: 0;
     background-color: #5f84ff;
   }
-
   ::v-deep label {
     font-weight: normal;
   }

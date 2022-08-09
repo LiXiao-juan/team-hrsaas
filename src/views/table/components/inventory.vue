@@ -15,19 +15,23 @@ export default {
   data() {
     return {};
   },
-  props:{
-    isShowInTask:{
-        type:Boolean,
-        default:false
+  props: {
+    isShowInTask: {
+      type: Boolean,
+      default: false,
     },
-    title:{
-        type:String,
-        default:'未知'
-    }
+    title: {
+      type: String,
+      default: "未知",
+    },
   },
   created() {},
   methods: {},
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+::v-deep .el-dialog {
+  border-radius: 10px;
+}
+</style>
