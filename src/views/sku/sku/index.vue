@@ -28,7 +28,7 @@
         >
           新建</el-button
         >
-        <el-button class="secondary">导入数据</el-button>
+        <el-button class="secondary" @click="Upload">导入数据</el-button>
       </div>
 
       <!-- 表格 -->
@@ -50,7 +50,12 @@
           </el-table-column>
           <el-table-column prop="unit" label="规格" width="220">
           </el-table-column>
-          <el-table-column prop="price" label="商品价格" width="220">
+          <el-table-column
+            prop="price"
+            label="商品价格"
+            width="220"
+            :formatter="Price"
+          >
           </el-table-column>
           <el-table-column
             prop="skuClass.className"
@@ -83,6 +88,8 @@
         ref="AddDialogsku"
         :visiable.sync="dialogVisible"
         :visiabledia.sync="logVisible"
+        :goodsList="goodsList"
+        @addSuccess="getGoodsDetail"
       ></Dialogsku>
 
       <!-- 分页 -->
@@ -95,13 +102,17 @@
         @lastPage="getLastTaskService"
         @nextPage="getNextTaskService"
       />
+
+      <Upload :visiableUp.sync="showUpdate"></Upload>
     </div>
   </div>
 </template>
 
 <script>
+import Upload from "@/views/sku/sku/components/Upload.vue";
 import Dialogsku from "@/views/sku/sku/components/Dialogsku.vue";
 import { getGoodsType } from "@/api/sku";
+import { getGoodsApi } from "@/api/skugoods";
 import Pagination from "@/views/sku/sku/components/pagination.vue";
 import dayjs from "dayjs";
 export default {
@@ -115,16 +126,19 @@ export default {
       regionList: [],
       dialogVisible: false,
       logVisible: false,
+      showUpdate: false,
       nodeData: {}, //主体内容数据
       params: {
         pageIndex: 1,
         pageSize: 10,
       },
+      goodsList: [],
     };
   },
   components: {
     Dialogsku,
     Pagination,
+    Upload,
   },
   created() {
     this.getGoodsDetail();
@@ -160,16 +174,23 @@ export default {
       this.getGoodsDetail();
     },
     // 展示新建弹层
-    showAdd() {
+    async showAdd() {
       this.dialogVisible = true;
       this.logVisible = false;
+      const res = await getGoodsApi();
+      // console.log(res);
+      this.goodsList = res.data.currentPageRecords;
     },
+
     // 修改操作弹层
-    editData(val) {
+    async editData(val) {
       this.dialogVisible = true;
       console.log(val);
       this.logVisible = true;
       this.$refs.AddDialogsku.getGoodsType(val);
+      const res = await getGoodsApi();
+      // console.log(res);
+      this.goodsList = res.data.currentPageRecords;
     },
     // 头部查询
     async SearchClass() {
@@ -180,6 +201,12 @@ export default {
     // 处理时间
     Time(row, column, index) {
       return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
+    },
+    Price(row, column, index) {
+      return index / 100;
+    },
+    Upload() {
+      this.showUpdate = true;
     },
   },
 };

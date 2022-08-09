@@ -18,7 +18,7 @@ export function getGoodsType(params) {
  */
 export function getAddGoods(data) {
   return request({
-    url: " /api/vm-service/sku",
+    url: "/vm-service/sku",
     method: "POST",
     data,
   });
@@ -26,13 +26,25 @@ export function getAddGoods(data) {
 /**
  * 修改商品
  * @param {*} skuId 商品id
- * @param {*} data 
- * @returns 
+ * @param {*} data
+ * @returns
  */
 export function editGoods(skuId, data) {
   return request({
     url: "/vm-service/sku/" + skuId,
-    method: " PUT",
+    method: "PUT",
     data,
+  });
+}
+/**
+ * 商品数据导入
+ * @param {*} fileName 文件名
+ * @returns
+ */
+export function getUpload(fileName) {
+  return request({
+    url: "/vm-service/sku/upload",
+    method: "POST",
+    fileName,
   });
 }
