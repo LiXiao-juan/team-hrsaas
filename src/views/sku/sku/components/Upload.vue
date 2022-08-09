@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       formData: {},
+      fileName: {},
     };
   },
   props: {
@@ -53,6 +54,8 @@ export default {
 
   methods: {
     beforeAvatarUpload(fileName) {
+      console.log(fileName);
+      this.fileName = fileName;
       const isxls = fileName.type === "xls/xlsx";
       const isLt1M = fileName.size / 1024 / 1024 < 1;
       if (!isxls) {
@@ -67,7 +70,7 @@ export default {
       this.$emit("update:visiableUp", false);
     },
     async onSave() {
-      await getUpload(fileName);
+      await getUpload(this.fileName);
     },
   },
 };
