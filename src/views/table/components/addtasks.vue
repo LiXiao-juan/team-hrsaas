@@ -16,7 +16,7 @@
             v-model="formData.innerCode"
             placeholder="请输入"
             autocomplete="off"
-            @blur="getPeople"
+            @input="getPeople"
           ></el-input>
         </el-form-item>
         <el-form-item
