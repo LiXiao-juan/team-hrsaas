@@ -53,9 +53,10 @@ export function EditPolicyApi(policyId, policyName, discount) {
  * @param {String,Number} policyid 策略id
  * @returns
  */
-export function getVmList(policyId) {
+export function getVmList(policyId, params) {
   return request({
     url: "/vm-service/policy/vmList/" + policyId,
     method: "GET",
+    params,
   });
 }

@@ -78,7 +78,7 @@ export default {
         this.onClose();
         this.$emit("addSuccess");
       } else {
-        await addClass(this.formData.classId, this.formData.className);
+        await addClass(this.formData.className);
         this.$message.success("新增商品类别成功");
         this.onClose();
         this.$emit("addSuccess");
