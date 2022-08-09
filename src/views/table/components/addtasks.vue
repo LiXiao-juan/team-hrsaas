@@ -293,4 +293,7 @@ export default {
   color: #6286ff;
   cursor: pointer;
 }
+::v-deep .el-dialog {
+  border-radius: 10px;
+}
 </style>

@@ -1,16 +1,12 @@
 <template>
-  <el-dialog
-    :title="dialogTitle"
-    :visible="visible"
-    width="630px"
-    :before-close="onClose"
-  >
+  <el-dialog title="新增设备" :visible="visible" width="630px" @close="onClose">
     <el-form
       ref="form"
       :model="formData"
       :rules="formDataRules"
       label-width="100px"
     >
+      <span>设备编号：</span><span>系统自动生成</span>
       <el-form-item label="区域名称:" prop="name">
         <el-input
           v-model="formData.name"
@@ -69,15 +65,11 @@ export default {
   props: {
     visible: {
       type: Boolean,
-    //   required: true,
+      //   required: true,
     },
   },
   created() {},
-  computed: {
-    dialogTitle() {
-      return this.formData.id ? "修改区域" : "新增区域";
-    },
-  },
+  computed: {},
   methods: {
     // 关闭
     onClose() {
@@ -93,12 +85,12 @@ export default {
       await this.$refs.form.validate();
       if (this.formData.id) {
         // await editRegion(this.formData.id,this.formData.name,this.formData.remark)
-        this.$message.success('修改成功')
-        this.onClose()
-        this.$emit('addSuccess')
+        this.$message.success("修改成功");
+        this.onClose();
+        this.$emit("addSuccess");
       } else {
         try {
-        //   await addRegion(this.formData);
+          //   await addRegion(this.formData);
           this.$message.success("添加成功");
           this.onClose();
           this.$emit("addSuccess");
@@ -109,9 +101,9 @@ export default {
     },
     // 获取区域详情
     async getRegionId(val) {
-    //   const res = await getEditRegion(val.id);
-    //   this.formData = res.data;
-    //   console.log(res);
+      //   const res = await getEditRegion(val.id);
+      //   this.formData = res.data;
+      //   console.log(res);
     },
   },
 };

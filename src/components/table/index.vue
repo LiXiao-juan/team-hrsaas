@@ -165,6 +165,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
 ::v-deep th {
   line-height: 1.15;
   padding: 10px 0px 9px;
@@ -173,6 +174,10 @@ export default {
   text-align: left;
   color: rgb(102, 102, 102);
 }
+  ::v-deep .el-col-12{
+    // height: 40px;
+    margin-top: 20px;
+  }
 .watch-info {
   cursor: pointer;
   color: #5f84ff;
