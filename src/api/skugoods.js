@@ -41,9 +41,9 @@ export function editClass(classId, className) {
  * @param {*} className 商品类别名称
  * @returns
  */
-export function addClass(classId, className) {
+export function addClass(className) {
   return request({
-    url: "/vm-service/skuClass/" + classId,
+    url: "/vm-service/skuClass",
     method: "POST",
     data: {
       className,
