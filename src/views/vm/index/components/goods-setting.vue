@@ -77,7 +77,7 @@
                 </div>
                 <div class="text">
                   <span>添加</span>
-                  <el-button class="del" @click="delBtn" :disabled="!item.sku"
+                  <el-button class="del" @click="delBtn(item)" :disabled="!item.sku"
                     >删除</el-button
                   >
                 </div>
@@ -148,12 +148,12 @@ export default {
           item.channelCode[item.channelCode.length - 1] > 5 ||
           item.channelCode[item.channelCode.length - 1] === "0"
       );
-      console.log(this.oneGoodsList);
     },
 
     // 删除功能
     delBtn(item) {
-      console.log(item);
+      item.sku = null
+      this.$emit('delGoods',item)
     },
   },
 };

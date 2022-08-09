@@ -173,7 +173,6 @@ export default {
     },
     // 货道
     async cargo(val) {
-      console.log(val);
       const { data } = await getArea(val.businessId);
       console.log(data);
       this.$store.commit("tickets/SETGOODSINFO", data);
