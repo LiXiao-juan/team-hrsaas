@@ -41,7 +41,12 @@
         </el-table-column>
         <el-table-column prop="skuName" label="商品名称" width="200px">
         </el-table-column>
-        <el-table-column prop="amount" label="订单金额(元)" width="200px">
+        <el-table-column
+          prop="amount"
+          label="订单金额(元)"
+          width="200px"
+          :formatter="Price"
+        >
         </el-table-column>
         <el-table-column prop="innerCode" label="设备编号" width="200px">
         </el-table-column>
@@ -67,27 +72,25 @@
           </template>
         </el-table-column>
       </el-table>
-      <!-- 分页 -->
-      <el-row type="flex" align="middle" class="footer">
-        <el-col class="text"
-          >共{{ pagedate.totalCount }}条记录 第{{ pagedate.pageIndex }}/{{
-            pagedate.totalPage
-          }}页</el-col
-        >
-        <el-col>
-          <el-row type="flex" justify="end">
-            <div class="left" @click="pageUp">上一页</div>
-            <div class="right" @click="pageDown">下一页</div>
-          </el-row>
-        </el-col>
-      </el-row>
       <!-- 查看详情弹窗 -->
       <Detail ref="deTail" :visible.sync="dialogTableVisible"></Detail>
+
+      <!-- 分页 -->
+      <Pagination
+        :listIsShow="this.lastDisabled && this.rightDisabled"
+        :taskList="nodeData"
+        v-if="nodeData.totalCount"
+        :lastDisabled="lastDisabled"
+        :rightDisabled="rightDisabled"
+        @lastPage="getLastTaskService"
+        @nextPage="getNextTaskService"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import Pagination from "@/views/order/components/pagination.vue";
 import Detail from "@/views/order/components/Detail.vue";
 import dayjs from "dayjs";
 import { getSearchOrder } from "@/api/order";
@@ -99,11 +102,6 @@ export default {
       },
       value: "",
       tableData: [],
-      pagedate: {
-        pageIndex: 1,
-        pageSize: 10,
-        totalPage: "",
-      },
       searchDetail: {
         pageIndex: 1,
         pageSize: 10,
@@ -112,26 +110,55 @@ export default {
         endDate: "",
       },
       dialogTableVisible: false,
+      nodeData: [],
+      params: {
+        pageIndex: 1,
+        pageSize: 10,
+      },
     };
+  },
+  computed: {
+    //控制上一页的按钮是否禁用
+    lastDisabled() {
+      return this.nodeData.pageIndex <= 1;
+    },
+    //控制下一页的按钮是否禁用
+    rightDisabled() {
+      return (
+        this.nodeData.pageIndex == Math.ceil(this.nodeData.totalCount / 10)
+      );
+    },
   },
   components: {
     Detail,
+    Pagination,
   },
   created() {
     this.SearchOrder();
   },
   methods: {
+    // 展示详情弹窗
     showDetail(val) {
       this.dialogTableVisible = true;
       // console.log(val);
       this.$refs.deTail.getRowDetail(val);
     },
+    // 获取搜素工单列表
     async SearchOrder() {
-      const res = await getSearchOrder();
+      const res = await getSearchOrder(this.params);
       // console.log(res);
       this.tableData = res.data.currentPageRecords;
-      this.pagedate = res.data;
-      console.log(this.pagedate);
+      this.nodeData = res.data;
+    },
+    // 加载下一页
+    async getNextTaskService() {
+      this.params.pageIndex++;
+      this.SearchOrder();
+    },
+    // 加载上一页
+    async getLastTaskService() {
+      this.params.pageIndex--;
+      this.SearchOrder();
     },
     statusFn(row, column, index) {
       return ["未支付", "支付完成", "出货成功", "出货失败"][index];
@@ -139,12 +166,11 @@ export default {
     dateFn(row, column, index) {
       return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
     },
-    // 上一页
-    pageUp() {},
-    // 下一页
-    pageDown() {},
     SesrchFn() {
       this.searchDetail.orderNo = this.formInline.user;
+    },
+    Price(row, column, index) {
+      return index / 100;
     },
   },
 };
@@ -216,5 +242,19 @@ export default {
     color: #d8dde3;
     cursor: not-allowed;
   }
+}
+::v-deep th {
+  line-height: 1.15;
+  padding: 10px 0px 9px;
+  background: rgb(243, 246, 251);
+  font-weight: 500;
+  text-align: left;
+  color: rgb(102, 102, 102);
+}
+::v-deep .el-table td {
+  height: 47px;
+  padding: 2px 0px;
+  text-align: left;
+  color: rgb(102, 102, 102);
 }
 </style>
