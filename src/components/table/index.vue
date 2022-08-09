@@ -150,7 +150,7 @@ export default {
     cellClick(row) {
       this.dialogInfo = true;
       console.log(row);
-      this.$store.commit('tickets/SETTASKDETAILS', row)
+      this.$store.commit("tickets/SETTASKDETAILS", row);
       this.title_info = row.taskStatusTypeEntity.statusName;
       this.row_info = row;
       this.$refs.info.showCancel(row.taskStatusTypeEntity.statusName);
@@ -165,6 +165,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+::v-deep th {
+  line-height: 1.15;
+  padding: 10px 0px 9px;
+  background: rgb(243, 246, 251);
+  font-weight: 500;
+  text-align: left;
+  color: rgb(102, 102, 102);
+}
+  ::v-deep .el-col-12{
+    // height: 40px;
+    margin-top: 20px;
+  }
 .watch-info {
   cursor: pointer;
   color: #5f84ff;
