@@ -29,15 +29,19 @@
     </template>
 
     <template v-else>
-      <span class="text">选择策略：</span>
-      <el-select v-model="choosePolicy" placeholder="请选择" size="small">
-        <el-option
-          :label="item.policyName"
-          :value="item.policyId"
-          v-for="(item, index) in chooseList"
-          :key="index"
-        ></el-option>
-      </el-select>
+      <el-form class="form">
+        <h4 class="text">选择策略：</h4>
+        <el-form-item label="策略名称">
+          <el-select v-model="choosePolicy" placeholder="请选择" size="small">
+            <el-option
+              :label="item.policyName"
+              :value="item.policyId"
+              v-for="(item, index) in chooseList"
+              :key="index"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
       <center>
         <el-button @click="$emit('closeEdit')">取 消</el-button>
         <el-button
@@ -101,7 +105,7 @@ export default {
           policyId: this.choosePolicy,
         });
         this.$message.success("修改成功");
-        this.$emit("closeEdit"); 
+        this.$emit("closeEdit");
       } catch (error) {
         this.$message.warning("修改失败");
       }
@@ -121,8 +125,58 @@ export default {
 .text {
   margin-left: 50px;
 }
-::v-deep .el-select > .el-input {
-  display: block;
-  width: 200%;
+::v-deep .el-dialog {
+  position: relative;
+  margin: 0 auto 50px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+::v-deep .el-dialog__title {
+  font-weight: 600;
+}
+::v-deep label {
+  font-weight: 400;
+}
+::v-deep .el-input {
+  width: 360px;
+  height: 36px;
+}
+.el-dialog__header {
+  padding: 20px;
+  padding-bottom: 10px;
+}
+::v-deep .el-input-number {
+  width: 360px;
+  height: 36px;
+}
+.cancel {
+  justify-content: center;
+  align-items: center;
+  width: 80px !important;
+  height: 36px;
+  padding: 0;
+  background-color: #fbf4f0 !important;
+  border: none;
+  color: #655b56 !important;
+  font-size: 14px;
+  border-radius: 4px;
+}
+.save {
+  justify-content: center;
+  align-items: center;
+  width: 80px !important;
+  height: 36px;
+  padding: 0;
+  background: linear-gradient(135deg, #ff9743, #ff5e20) !important;
+  border: none;
+  font-size: 14px;
+  margin-left: 30px;
+  border-radius: 4px;
+}
+.form ::v-deep .el-form-item {
+  line-height: 50px;
+  margin-left: 50px;
 }
 </style>

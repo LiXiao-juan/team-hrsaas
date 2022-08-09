@@ -2,28 +2,34 @@
   <el-dialog title="新增设备" :visible="visible" width="630px" @close="onClose">
     <el-form
       ref="form"
-      :model="formData"
+      :model="policyId"
       :rules="formDataRules"
       label-width="100px"
     >
-      <span>设备编号：</span><span>系统自动生成</span>
-      <el-form-item label="区域名称:" prop="name">
-        <el-input
-          v-model="formData.name"
-          placeholder="请输入"
-          maxlength="15"
-          show-word-limit
-        ></el-input>
+      <el-form-item>
+        <center>
+          <h3>设备编号：系统自动生成</h3>
+        </center>
       </el-form-item>
-      <el-form-item label="备注说明:" prop="remark">
-        <el-input
-          v-model="formData.remark"
-          type="textarea"
-          maxlength="40"
-          :autosize="{ minRows: 3, maxRows: 4 }"
-          placeholder="请输入备注(不超过40字)"
-          show-word-limit
-        ></el-input>
+      <el-form-item label="选择型号:" prop="vmType">
+        <el-select v-model="policyId.vmType" placeholder="请选择">
+          <el-option
+            v-for="item in typeList"
+            :key="item.typeId"
+            :label="item.name"
+            :value="item.typeId"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="选择点位:" prop="nodeId">
+        <el-select v-model="policyId.nodeId" placeholder="请选择">
+          <el-option
+            v-for="item in addressList"
+            :key="item.typeId"
+            :label="item.name"
+            :value="item.id"
+          ></el-option>
+        </el-select>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
@@ -36,23 +42,23 @@
 </template>
 
 <script>
-// import { addRegion, getEditRegion, editRegion } from "@/api/address";
+import { addVmService } from "@/api/vm";
 export default {
   data() {
     return {
-      formData: {
-        name: "", // 区域名称
-        remark: "", // 备注说明
+      policyId: {
+        vmType: "", // 售货机类型Id
+        nodeId: "", // 	所属点位Id
       },
       formDataRules: {
-        name: [
+        vmType: [
           {
             required: true,
             message: "区域名称不能为空",
             trigger: "blur",
           },
         ],
-        remark: [
+        nodeId: [
           {
             required: true,
             message: "备注说明不能为空",
@@ -65,7 +71,15 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      //   required: true,
+      required: true,
+    },
+    typeList: {
+      type: Array,
+      default: () => [],
+    },
+    addressList: {
+      type: Array,
+      default: () => [],
     },
   },
   created() {},
@@ -83,27 +97,16 @@ export default {
     // 保存
     async onSave() {
       await this.$refs.form.validate();
-      if (this.formData.id) {
-        // await editRegion(this.formData.id,this.formData.name,this.formData.remark)
-        this.$message.success("修改成功");
-        this.onClose();
-        this.$emit("addSuccess");
-      } else {
-        try {
-          //   await addRegion(this.formData);
-          this.$message.success("添加成功");
-          this.onClose();
-          this.$emit("addSuccess");
-        } catch (error) {
-          this.$message.error("添加失败");
-        }
+      this.policyId.createUserId = this.$store.state.user.token.userId;
+      // console.log(this.policyId);
+      try {
+        await addVmService(this.policyId);
+        this.$message.success("添加售货机成功");
+        this.$emit("update:visible", false);
+        this.$parent.getVmList();
+      } catch (error) {
+        this.$message.warning("添加售货机失败");
       }
-    },
-    // 获取区域详情
-    async getRegionId(val) {
-      //   const res = await getEditRegion(val.id);
-      //   this.formData = res.data;
-      //   console.log(res);
     },
   },
 };
@@ -146,6 +149,7 @@ export default {
   border: none;
   color: #655b56 !important;
 }
+
 .confirmBtn {
   background: linear-gradient(135deg, #ff9743, #ff5e20) !important;
   justify-content: center;
@@ -156,5 +160,14 @@ export default {
   height: 36px;
   padding: 0;
   border: none;
+}
+::v-deep .el-input-number {
+  width: 360px;
+  height: 36px;
+}
+::v-deep .el-input {
+  width: 360px;
+  height: 36px;
+  margin-left: 30px;
 }
 </style>
