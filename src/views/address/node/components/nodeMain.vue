@@ -11,14 +11,18 @@
         >
       </el-row>
       <template>
-        <el-table :data="regionList" style="width: 100%" highlight-current-row>
+        <el-table :data="nodeList" style="width: 100%" highlight-current-row empty-text="暂无数据">
           <el-table-column type="index" label="序号" width="80">
           </el-table-column>
-          <el-table-column prop="name" label="区域名称" width="330">
+          <el-table-column prop="name" label="点位名称" width="200">
           </el-table-column>
-          <el-table-column prop="nodeCount" label="点位数" width="330">
+          <el-table-column prop="region.name" label="所在区域" width="200">
           </el-table-column>
-          <el-table-column prop="remark" label="备注说明" width="330">
+          <el-table-column prop="businessType.name" label="商圈类型" width="200">
+          </el-table-column>
+          <el-table-column prop="ownerName" label="合作商" width="200">
+          </el-table-column>
+          <el-table-column prop="addr" label="详细地址" :formatter="addrType" width="195" :show-overflow-tooltip="true">
           </el-table-column>
           <el-table-column label="操作" width="200">
             <template slot-scope="index">
@@ -48,13 +52,13 @@
 </template>
 
 <script>
-import {delRegion} from '@/api/address'
+import {delNodeApi} from '@/api/addressNode'
 export default {
   data() {
     return {};
   },
   props: {
-    regionList: {
+    nodeList: {
       type: Array,
     },
   },
@@ -62,6 +66,7 @@ export default {
   created() {},
 
   methods: {
+    // 删除
     async onRemove(val){
       try {
         await this.$confirm('确定要删除吗', '提示', {
@@ -69,13 +74,16 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         })
-        await delRegion(val.id)
+        await delNodeApi(val.id)
         this.$message.success('删除成功')
         this.$emit('remove')
       } catch (error) {
         this.$message.error('删除失败')
         console.log(error);
       }
+    },
+    addrType(row,colum,index){
+        return index.slice(12)
     }
   },
 };
