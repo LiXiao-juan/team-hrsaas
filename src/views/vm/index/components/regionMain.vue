@@ -42,7 +42,10 @@
 
           <el-table-column label="操作" width="210">
             <template slot-scope="scope">
-              <el-button type="primary" class="el-button--text" @click="cargo"
+              <el-button
+                type="primary"
+                class="el-button--text"
+                @click="cargo(scope.row)"
                 >货道</el-button
               >
               <el-button
@@ -82,7 +85,7 @@
 
 <script>
 // import {delRegion} from '@/api/address'
-import { editVmList, getVmPolicy, getVmPolicyList } from "@/api/vm";
+import { editVmList, getVmPolicy, getVmPolicyList, getArea } from "@/api/vm";
 import Dialog from "./dialog.vue";
 import Policy from "./policy-dialog.vue";
 export default {
@@ -110,6 +113,7 @@ export default {
     statusFn(a, b, index) {
       return { 0: "未投放", 1: "运营", 3: "撤机" }[index];
     },
+    // 新增
     showAdd() {
       this.$emit("add");
     },
@@ -168,7 +172,12 @@ export default {
       }
     },
     // 货道
-    cargo() {},
+    async cargo(val) {
+      const { data } = await getArea(val.businessId);
+      console.log(data);
+      this.$store.commit("tickets/SETGOODSINFO", data);
+      this.$emit("goods", val);
+    },
 
     // 选中的数组
     handleSelectionChange(selection, row) {

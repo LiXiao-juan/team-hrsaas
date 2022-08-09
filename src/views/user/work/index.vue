@@ -72,7 +72,8 @@ import CustomButton from "@/components/CustomButton";
 import Pagination from "@/components/Pagination";
 import FormDialog from "./components/FormDialog";
 import { getRoleList, getPersonnel } from "@/api/personnel";
-import { getUserWorkList } from "@/api/user-work";
+import { getUserWorkList, getUserWorkTime } from "@/api/user-work";
+import dayjs from "dayjs";
 export default {
   components: {
     InputField,
@@ -92,6 +93,22 @@ export default {
       },
       /* 工作量列表 */
       userWorkListData: [],
+      paramsWeek: {
+        userId: "",
+        start: "",
+        end: "",
+      },
+      paramsMonth: {
+        userId: "",
+        start: "",
+        end: "",
+      },
+      paramsYear: {
+        userId: "",
+        start: "",
+        end: "",
+      },
+      workCount: [],
     };
   },
   created() {
@@ -150,9 +167,55 @@ export default {
     },
     /* 查看详情 */
     async viewDetails(index, row) {
-      this.$refs.dialog.dialogTableVisible = true;
-      const res = await getPersonnel(row.userId);
-      this.$refs.dialog.detailInfo = res.data;
+      try {
+        this.paramsWeek.userId = row.userId;
+        this.paramsMonth.userId = row.userId;
+        this.paramsYear.userId = row.userId;
+        const res = await getPersonnel(row.userId);
+        this.$refs.dialog.detailInfo = res.data;
+        await this.getUserWorkTime();
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.$refs.dialog.dialogTableVisible = true;
+      }
+    },
+    /* 维护时间 */
+    getTime() {
+      this.paramsWeek.start = dayjs()
+        .startOf("week")
+        .add(1, "day")
+        .format("YYYY-MM-DD HH:mm:ss");
+      this.paramsWeek.end = dayjs()
+        .endOf("week")
+        .add(1, "day")
+        .format("YYYY-MM-DD HH:mm:ss");
+      this.paramsMonth.start = dayjs()
+        .startOf("month")
+        .format("YYYY-MM-DD HH:mm:ss");
+      this.paramsMonth.end = dayjs()
+        .endOf("month")
+        .format("YYYY-MM-DD HH:mm:ss");
+      this.paramsYear.start = dayjs()
+        .startOf("year")
+        .format("YYYY-MM-DD HH:mm:ss");
+      this.paramsYear.end = dayjs().endOf("year").format("YYYY-MM-DD HH:mm:ss");
+    },
+    /* 获取本周本月本年工单 */
+    async getUserWorkTime() {
+      try {
+        this.workCount = [];
+        await this.getTime();
+        const week = await getUserWorkTime(this.paramsWeek);
+        this.workCount.push({ ...week.data, date: "本周" });
+        const month = await getUserWorkTime(this.paramsMonth);
+        this.workCount.push({ ...month.data, date: "本月" });
+        const year = await getUserWorkTime(this.paramsYear);
+        this.workCount.push({ ...year.data, date: "本年" });
+        this.$refs.dialog.workCount = this.workCount;
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

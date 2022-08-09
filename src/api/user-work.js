@@ -11,3 +11,15 @@ export const getUserWorkList = (params) => {
     params,
   });
 };
+
+/**
+ * 获取用户工作量(工单统计)
+ * @param {*} params
+ * @returns promise
+ */
+export const getUserWorkTime = (params) => {
+  return request({
+    url: "/task-service/task/userWork",
+    params,
+  });
+};

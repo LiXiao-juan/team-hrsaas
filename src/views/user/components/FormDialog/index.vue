@@ -76,7 +76,7 @@
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="dialogFormVisible = false">取 消</el-button>
+      <el-button @click="cancel">取 消</el-button>
       <el-button type="primary" @click="onSave">确 定</el-button>
     </div>
   </el-dialog>
@@ -171,16 +171,24 @@ export default {
     /* 提交 */
     async onSave() {
       await this.$refs.form.validate();
+      this.$refs.form.resetFields();
       try {
         if (this.title === "编辑人员") {
           await editPersonnel(this.currentId, this.form);
+          await this.$refs.form.clearValidate();
           this.$message.success("修改信息成功");
         } else {
           await addPersonnel(this.form);
+          await this.$refs.form.clearValidate();
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.dialogFormVisible = false;
       }
+    },
+    cancel() {
+      this.$refs.form.resetFields();
       this.dialogFormVisible = false;
     },
   },

@@ -63,7 +63,8 @@
         <div class="info-left">{{ title_info }}</div>
         <!-- 右边 -->
         <div class="info-right">
-          <img src="@/assets/cancel.png" alt="" />
+          <img src="@/assets/cancel.png" alt="" v-if="title_info == '取消'" />
+          <img src="@/assets/success.png" alt="" v-else />
         </div>
       </div>
 
@@ -165,7 +166,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 ::v-deep th {
   line-height: 1.15;
   padding: 10px 0px 9px;
@@ -174,10 +174,10 @@ export default {
   text-align: left;
   color: rgb(102, 102, 102);
 }
-  ::v-deep .el-col-12{
-    // height: 40px;
-    margin-top: 20px;
-  }
+::v-deep .el-col-12 {
+  // height: 40px;
+  margin-top: 20px;
+}
 .watch-info {
   cursor: pointer;
   color: #5f84ff;
