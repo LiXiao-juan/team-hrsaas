@@ -11,17 +11,8 @@
       label-width="120px"
       :rules="formRules"
     >
-      <el-form-item label="策略名称" prop="policyName">
-        <el-input placeholder="请输入" v-model="formData.policyName"></el-input>
-      </el-form-item>
-      <el-form-item label="策略方案" prop="discount">
-        <el-input-number
-          controls-position="right"
-          placeholder="请输入"
-          :min="1"
-          :max="100"
-          v-model="formData.discount"
-        ></el-input-number>
+      <el-form-item label="商品类型名称" prop="className">
+        <el-input placeholder="请输入" v-model="formData.className"></el-input>
       </el-form-item>
     </el-form>
     <center>
@@ -34,21 +25,17 @@
 </template>
 
 <script>
-import { AddPolicyApi, EditPolicyApi } from "@/api/policy";
+import { editClass, addClass } from "@/api/skugoods";
 export default {
   data() {
     return {
       formData: {
-        policyId: "",
-        policyName: "", //策略名称
-        discount: "", //策略方案
+        classId: "",
+        className: "", //商品类型名称
       },
       formRules: {
-        policyName: [
-          { required: true, message: "策略名称不能为空", trigger: "blur" },
-        ],
-        discount: [
-          { required: true, message: "策略名称不能为空", trigger: "change" },
+        className: [
+          { required: true, message: "商品类型名称不能为空", trigger: "blur" },
         ],
       },
     };
@@ -69,7 +56,7 @@ export default {
   created() {},
   computed: {
     dialogTitle() {
-      return this.visiabledia ? "修改策略" : "新增策略";
+      return this.visiabledia ? "修改商品类别" : "新增商品类别";
     },
   },
 
@@ -79,29 +66,28 @@ export default {
       // 重置表单
       this.$refs.form.resetFields();
       this.formData = {
-        policyName: "", //策略名称
-        discount: "", //策略方案
+        className: "", //商品类型名称
       };
     },
     async onSave() {
       // 对整个表单进行校验的方法
       await this.$refs.form.validate();
       if (this.visiabledia) {
-        await EditPolicyApi(this.formData.policyId,this.formData.policyName, this.formData.discount);
-        this.$message.success("修改策略成功");
+        await editClass(this.formData.classId, this.formData.className);
+        this.$message.success("修改商品类别成功");
         this.onClose();
         this.$emit("addSuccess");
       } else {
-        await AddPolicyApi(this.formData);
-        this.$message.success("新增策略成功");
+        await addClass(this.formData.classId, this.formData.className);
+        this.$message.success("新增商品类别成功");
         this.onClose();
         this.$emit("addSuccess");
       }
     },
-    async getPolicy(val) {
-      this.formData.policyName = val.policyName;
-      this.formData.discount = val.discount;
-      this.formData.policyId=val.policyId;
+    async getClass(val) {
+      console.log(val);
+      this.formData.className = val.className;
+      this.formData.classId = val.classId;
     },
   },
 };

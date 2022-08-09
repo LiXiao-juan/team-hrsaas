@@ -11,17 +11,40 @@
       label-width="120px"
       :rules="formRules"
     >
-      <el-form-item label="策略名称" prop="policyName">
-        <el-input placeholder="请输入" v-model="formData.policyName"></el-input>
+      <el-form-item label="商品名称:" prop="skuName">
+        <el-input placeholder="请输入" v-model="formData.skuName"></el-input>
       </el-form-item>
-      <el-form-item label="策略方案" prop="discount">
+      <el-form-item label="品牌:" prop="brandName">
+        <el-input placeholder="请输入" v-model="formData.brandName"></el-input>
+      </el-form-item>
+      <el-form-item label="商品价格(元):" prop="price">
         <el-input-number
           controls-position="right"
           placeholder="请输入"
           :min="1"
-          :max="100"
+          :max="1000"
           v-model="formData.discount"
         ></el-input-number>
+      </el-form-item>
+      <el-form-item label="商品类型:" prop="className">
+        <el-select v-model="formData.className" placeholder="请选择">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="规格:" prop="unit">
+        <el-input placeholder="请输入" v-model="formData.unit"></el-input>
+      </el-form-item>
+      <el-form-item label="商品图片:" prop="skuImage">
+        <el-upload
+          class="upload-demo"
+          drag
+          action="https://jsonplaceholder.typicode.com/posts/"
+          multiple
+        >
+          <i class="el-icon-upload"></i>
+        </el-upload>
+        <div class="el-upload__text">支持扩展名:jpg、png,文件不得大于100kb</div>
       </el-form-item>
     </el-form>
     <center>
@@ -34,21 +57,31 @@
 </template>
 
 <script>
-import { AddPolicyApi, EditPolicyApi } from "@/api/policy";
 export default {
   data() {
     return {
       formData: {
-        policyId: "",
-        policyName: "", //策略名称
-        discount: "", //策略方案
+        skuName: "", //商品名称
+        brandName: "", //品牌
+        price: "", //商品价格
+        className: "", //商品类型
+        unit: "", //规格
+        skuImage: "", //商品图片
       },
       formRules: {
-        policyName: [
-          { required: true, message: "策略名称不能为空", trigger: "blur" },
+        skuName: [
+          { required: true, message: "商品名称不能为空", trigger: "blur" },
         ],
-        discount: [
-          { required: true, message: "策略名称不能为空", trigger: "change" },
+        brandName: [
+          { required: true, message: "品牌不能为空", trigger: "blur" },
+        ],
+        price: [{ required: true, message: "价格不能为空", trigger: "change" }],
+        className: [
+          { required: true, message: "商品类型不能为空", trigger: "change" },
+        ],
+        unit: [{ required: true, message: "规格不能为空", trigger: "blur" }],
+        skuImage: [
+          { required: true, message: "商品图片不能为空", trigger: "change" },
         ],
       },
     };
@@ -69,7 +102,7 @@ export default {
   created() {},
   computed: {
     dialogTitle() {
-      return this.visiabledia ? "修改策略" : "新增策略";
+      return this.visiabledia ? "修改商品" : "新增商品";
     },
   },
 
@@ -84,24 +117,8 @@ export default {
       };
     },
     async onSave() {
-      // 对整个表单进行校验的方法
+      //   // 对整个表单进行校验的方法
       await this.$refs.form.validate();
-      if (this.visiabledia) {
-        await EditPolicyApi(this.formData.policyId,this.formData.policyName, this.formData.discount);
-        this.$message.success("修改策略成功");
-        this.onClose();
-        this.$emit("addSuccess");
-      } else {
-        await AddPolicyApi(this.formData);
-        this.$message.success("新增策略成功");
-        this.onClose();
-        this.$emit("addSuccess");
-      }
-    },
-    async getPolicy(val) {
-      this.formData.policyName = val.policyName;
-      this.formData.discount = val.discount;
-      this.formData.policyId=val.policyId;
     },
   },
 };
@@ -157,5 +174,23 @@ export default {
   font-size: 14px;
   margin-left: 30px;
   border-radius: 4px;
+}
+::v-deep .el-upload-dragger {
+  width: 84px;
+  height: 84px;
+  line-height: 84px;
+  text-align: center;
+  color: #bac0cd;
+  background: #f3f6fb;
+}
+::v-deep .el-icon-upload {
+  font-size: 30px;
+  color: #c0c4cc;
+  margin: 15px 0 16px;
+  line-height: 50px;
+}
+::v-deep .el-upload__text {
+  font-size: 14px;
+  color: #bac0cd;
 }
 </style>

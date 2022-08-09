@@ -95,12 +95,11 @@ export default {
       pagedate: {
         pageIndex: 1,
         pageSize: 10,
-        totalPage:"",
+        totalPage: "",
       },
     };
   },
-  components: {
-  },
+  components: {},
   created() {
     this.SearchOrder();
   },
@@ -195,5 +194,19 @@ export default {
     color: #d8dde3;
     cursor: not-allowed;
   }
+}
+::v-deep th {
+  line-height: 1.15;
+  padding: 10px 0px 9px;
+  background: rgb(243, 246, 251);
+  font-weight: 500;
+  text-align: left;
+  color: rgb(102, 102, 102);
+}
+::v-deep .el-table td {
+  height: 47px;
+  padding: 2px 0px;
+  text-align: left;
+  color: rgb(102, 102, 102);
 }
 </style>
