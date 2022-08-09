@@ -60,12 +60,24 @@
       :visiabledia.sync="logVisible"
       @addSuccess="getClassgoods"
     ></Dialog>
+
+    <!-- 分页 -->
+    <Pagination
+      :listIsShow="this.lastDisabled && this.rightDisabled"
+      :taskList="nodeData"
+      v-if="nodeData.totalCount"
+      :lastDisabled="lastDisabled"
+      :rightDisabled="rightDisabled"
+      @lastPage="getLastTaskService"
+      @nextPage="getNextTaskService"
+    />
   </div>
 </template>
 
 <script>
 import { getGoodsApi, deleteGoods } from "@/api/skugoods";
 import Dialog from "@/views/sku/class/components/Dialog.vue";
+import Pagination from "@/views/sku/class/components/pagination.vue"
 export default {
   data() {
     return {
@@ -77,10 +89,28 @@ export default {
       regionList: [],
       dialogVisible: false,
       logVisible: false,
+      nodeData: {}, //主体内容数据
+      params: {
+        pageIndex: 1,
+        pageSize: 10,
+      },
     };
   },
   components: {
     Dialog,
+    Pagination
+  },
+  computed: {
+    //控制上一页的按钮是否禁用
+    lastDisabled() {
+      return this.nodeData.pageIndex <= 1;
+    },
+    //控制下一页的按钮是否禁用
+    rightDisabled() {
+      return (
+        this.nodeData.pageIndex == Math.ceil(this.nodeData.totalCount / 10)
+      );
+    },
   },
 
   created() {
@@ -90,10 +120,22 @@ export default {
   methods: {
     //获取商品类别
     async getClassgoods() {
-      const res = await getGoodsApi();
+      const res = await getGoodsApi(this.params);
       console.log(res);
       this.regionList = res.data.currentPageRecords;
+      this.nodeData = res.data;
     },
+    // 加载下一页
+    async getNextTaskService() {
+      this.params.pageIndex++;
+      this.getClassgoods();
+    },
+    // 加载上一页
+    async getLastTaskService() {
+      this.params.pageIndex--;
+      this.getClassgoods();
+    },
+
     // 删除
     async onRemove(val) {
       try {
