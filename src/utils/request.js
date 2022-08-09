@@ -46,7 +46,7 @@ service.interceptors.response.use(
       await store.dispatch("user/logout");
       router.push("/login");
     } else {
-      Message.error(err.message);
+      // Message.error("操作失败");
     }
     return Promise.reject(err);
   }

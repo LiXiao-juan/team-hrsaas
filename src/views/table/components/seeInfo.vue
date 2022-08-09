@@ -82,4 +82,9 @@ export default {
 };
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+::v-deep .el-dialog {
+  border-radius: 10px;
+  width: 630px;
+}
+</style>

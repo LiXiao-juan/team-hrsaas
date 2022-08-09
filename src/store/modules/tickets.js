@@ -8,6 +8,7 @@ export default {
     total: 0,
     taskList: [],
     taskDetails: {},
+    device: {},
   },
   mutations: {
     SETTASKLIST(state, payload) {
@@ -17,6 +18,9 @@ export default {
     },
     SETTASKDETAILS(state, payload) {
       state.taskDetails = payload;
+    },
+    SETDEVICE(state, payload) {
+      state.device = payload;
     },
   },
   actions: {
