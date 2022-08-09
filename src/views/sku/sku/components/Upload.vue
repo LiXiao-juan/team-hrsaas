@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { getUpload } from "@/api/sku";
 export default {
   data() {
     return {
