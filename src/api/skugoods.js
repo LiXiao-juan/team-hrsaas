@@ -43,7 +43,7 @@ export function editClass(classId, className) {
  */
 export function addClass(classId, className) {
   return request({
-    url: "/vm-service/skuClass" + classId,
+    url: "/vm-service/skuClass/" + classId,
     method: "POST",
     data: {
       className,
