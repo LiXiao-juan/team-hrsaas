@@ -28,7 +28,12 @@
         >新建</el-button
       >
       <!-- 表格 -->
-      <el-table :data="tableData" style="width: 100%" class="table">
+      <el-table
+        :data="tableData"
+        style="width: 100%"
+        class="table"
+        v-model="loading"
+      >
         <el-table-column type="index" label="序号" width="100px">
         </el-table-column>
         <el-table-column prop="policyName" label="策略名称" width="300px">
@@ -66,6 +71,17 @@
     ></Adddialog>
     <!-- 查看详情弹窗组件 -->
     <Detaildialog ref="Detail" :visiable.sync="disVisible"></Detaildialog>
+
+    <!-- 分页 -->
+    <Pagination
+      :listIsShow="this.lastDisabled && this.rightDisabled"
+      :taskList="nodeData"
+      v-if="nodeData.totalCount"
+      :lastDisabled="lastDisabled"
+      :rightDisabled="rightDisabled"
+      @lastPage="getLastTaskService"
+      @nextPage="getNextTaskService"
+    />
   </div>
 </template>
 
@@ -74,6 +90,7 @@ import { getPolicyApi, DeletePolicyApi } from "@/api/policy";
 import dayjs from "dayjs";
 import Adddialog from "@/views/policy/components/Adddialog.vue";
 import Detaildialog from "@/views/policy/components/Detaildialog.vue";
+import Pagination from "@/views/policy/components/pagination.vue";
 export default {
   data() {
     return {
@@ -82,20 +99,51 @@ export default {
         pageSize: 10,
         policyName: "",
       },
-      tableData: [],
+      tableData: [], //表格数据
+      nodeData: {}, //主体内容数据
       dialogVisible: false,
       logVisible: false,
       disVisible: false,
+      params: {
+        pageIndex: 1,
+        pageSize: 10,
+      },
     };
   },
   created() {
     this.getPolicy();
   },
+  computed: {
+    //控制上一页的按钮是否禁用
+    lastDisabled() {
+      return this.nodeData.pageIndex <= 1;
+    },
+    //控制下一页的按钮是否禁用
+    rightDisabled() {
+      return (
+        this.nodeData.pageIndex == Math.ceil(this.nodeData.totalCount / 10)
+      );
+    },
+  },
   methods: {
+    // 获取主体列表数据
     async getPolicy() {
-      const res = await getPolicyApi();
+      this.loading = true;
+      const res = await getPolicyApi(this.params);
       console.log(res);
       this.tableData = res.data.currentPageRecords;
+      this.nodeData = res.data;
+      this.loading = false;
+    },
+    // 加载下一页
+    async getNextTaskService() {
+      this.params.pageIndex++;
+      this.getPolicy();
+    },
+    // 加载上一页
+    async getLastTaskService() {
+      this.params.pageIndex--;
+      this.getPolicy();
     },
     creatTime(row, column, index) {
       return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
@@ -140,6 +188,7 @@ export default {
   components: {
     Adddialog,
     Detaildialog,
+    Pagination,
   },
 };
 </script>

@@ -75,7 +75,7 @@ export default {
         brandName: [
           { required: true, message: "品牌不能为空", trigger: "blur" },
         ],
-        price: [{ required: true, message: "价格不能为空", trigger: "change" }],
+        price: [{ message: "价格不能为空", trigger: "change" }],
         className: [
           { required: true, message: "商品类型不能为空", trigger: "change" },
         ],
@@ -117,8 +117,11 @@ export default {
       };
     },
     async onSave() {
-      //   // 对整个表单进行校验的方法
+      // 对整个表单进行校验的方法
       await this.$refs.form.validate();
+    },
+    getGoodsType(val) {
+      this.formData = val;
     },
   },
 };

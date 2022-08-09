@@ -84,6 +84,17 @@
         :visiable.sync="dialogVisible"
         :visiabledia.sync="logVisible"
       ></Dialogsku>
+
+      <!-- 分页 -->
+      <Pagination
+        :listIsShow="this.lastDisabled && this.rightDisabled"
+        :taskList="nodeData"
+        v-if="nodeData.totalCount"
+        :lastDisabled="lastDisabled"
+        :rightDisabled="rightDisabled"
+        @lastPage="getLastTaskService"
+        @nextPage="getNextTaskService"
+      />
     </div>
   </div>
 </template>
@@ -91,6 +102,7 @@
 <script>
 import Dialogsku from "@/views/sku/sku/components/Dialogsku.vue";
 import { getGoodsType } from "@/api/sku";
+import Pagination from "@/views/sku/sku/components/pagination.vue";
 import dayjs from "dayjs";
 export default {
   data() {
@@ -103,20 +115,49 @@ export default {
       regionList: [],
       dialogVisible: false,
       logVisible: false,
+      nodeData: {}, //主体内容数据
+      params: {
+        pageIndex: 1,
+        pageSize: 10,
+      },
     };
   },
   components: {
     Dialogsku,
+    Pagination,
   },
   created() {
     this.getGoodsDetail();
   },
+  computed: {
+    //控制上一页的按钮是否禁用
+    lastDisabled() {
+      return this.nodeData.pageIndex <= 1;
+    },
+    //控制下一页的按钮是否禁用
+    rightDisabled() {
+      return (
+        this.nodeData.pageIndex == Math.ceil(this.nodeData.totalCount / 10)
+      );
+    },
+  },
   methods: {
     // 商品详情
     async getGoodsDetail() {
-      const res = await getGoodsType();
+      const res = await getGoodsType(this.params);
       console.log(res);
       this.regionList = res.data.currentPageRecords;
+      this.nodeData = res.data;
+    },
+    // 加载下一页
+    async getNextTaskService() {
+      this.params.pageIndex++;
+      this.getGoodsDetail();
+    },
+    // 加载上一页
+    async getLastTaskService() {
+      this.params.pageIndex--;
+      this.getGoodsDetail();
     },
     // 展示新建弹层
     showAdd() {
@@ -124,10 +165,11 @@ export default {
       this.logVisible = false;
     },
     // 修改操作弹层
-    editData() {
+    editData(val) {
       this.dialogVisible = true;
       console.log(val);
       this.logVisible = true;
+      this.$refs.AddDialogsku.getGoodsType(val);
     },
     // 头部查询
     async SearchClass() {
