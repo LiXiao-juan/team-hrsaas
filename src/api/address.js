@@ -63,3 +63,35 @@ export const delRegion = (id) => {
     
   });
 };
+
+
+/**
+ * 查看详情
+ * @param {*} id 
+ * @returns 
+ */
+export const checkRegionList = (pageIndex,pageSize,regionId) => {
+  return request({
+    url: '/vm-service/node/search',    
+    params:{
+      pageIndex,
+      pageSize,
+      regionId
+    }
+  });
+};
+
+
+/**
+ * 获取点位管理列表数据
+ * @param {*} params 
+ * @returns 
+ */
+export const getNodeList = (params) => {
+  return request({
+    url: '/vm-service/node/search',
+    method: "GET",
+    params      
+  });
+};
+

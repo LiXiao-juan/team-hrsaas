@@ -23,7 +23,6 @@
           <el-table-column label="操作" width="200">
             <template slot-scope="index">
               <el-button type="primary" class="el-button--text"
-                @click.native="$emit('check',index.row)"
                 >查看详情</el-button
               >
               <el-button

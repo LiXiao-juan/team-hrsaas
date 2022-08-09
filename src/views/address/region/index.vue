@@ -9,14 +9,17 @@
       v-model="loading"
       @edit="alterRegion"
       @remove="getRegionList"
+      @check="checkDialog"
     />
     <!-- 分页 -->
     <pagenation
-      :page="regionData"
-      :upDisabled="upDisabled"
-      :downDisabled="downDisabled"
-      @pageDown="pageDown"
-      @pageUp="pageUp"
+      :listIsShow="listIsShow"
+      :taskList="regionData"
+      v-if="regionData.totalCount"
+      :lastDisabled="lastDisabled"
+      :rightDisabled="rightDisabled"
+      @lastPage="getLastTaskService"
+      @nextPage="getNextTaskService"
     />
     <!-- 新建，修改弹窗 -->
     <addRegion
@@ -24,23 +27,34 @@
       @addSuccess="getRegionList"
       ref="addRegion"
     />
+    <!-- 查看详情弹窗 -->
+    <checkRegion
+      :visible.sync="checkShowDialog"
+      :checkList="checkList.currentPageRecords"
+      :checkListName="checkListName"
+    />
   </div>
 </template>
 
 <script>
-import { getRegionList } from "@/api/address";
+import { getRegionList, checkRegionList } from "@/api/address";
 import regionSearch from "./components/regionSearch.vue";
 import regionMain from "./components/regionMain.vue";
 import pagenation from "./components/pagination.vue";
 import addRegion from "./components/add-region.vue";
+import checkRegion from "./components/check-region.vue";
 export default {
   data() {
     return {
       regionData: {}, //列表数据，页数等
+      checkList: {}, //查看详情的详细数据
+      checkListName: "", //查看详情的区域名称
       addShowDialog: false, //控制添加弹窗
-      upDisabled: true, //禁用上一页
-      downDisabled: false, //禁用下一页
+      checkShowDialog: false, //查看详情弹窗
       loading: false,
+      //节流阀,控制请求
+      flag: true,
+      // 控制页数
       params: {
         pageIndex: 1,
         pageSize: 10,
@@ -55,22 +69,34 @@ export default {
     regionMain,
     pagenation,
     addRegion,
+    checkRegion,
   },
+
   computed: {
-    // upDisabled() {
-    //   if (this.regionData.pageIndex === 1) return true;
-    // },
-    // downDisabled() {
-    //   return this.regionData.pageIndex === this.regionData.totalPage;
-    // },
+    //控制列表数量显示隐藏
+    listIsShow() {
+      return !this.regionData.currentPageRecords?.[0];
+    },
+    //控制上一页的按钮是否禁用
+    lastDisabled() {
+      return this.regionData.pageIndex <= 1;
+    },
+    //控制下一页的按钮是否禁用
+    rightDisabled() {
+      return (
+        this.regionData.pageIndex == Math.ceil(this.regionData.totalCount / 10)
+      );
+    },
   },
+
   methods: {
     // 获取列表数据
     async getRegionList() {
       this.loading = true;
-      const res = await getRegionList();
+      const res = await getRegionList(this.params);
       // console.log(res);
       this.regionData = res.data;
+      this.flag = true;
       this.loading = false;
     },
     // 区域搜索
@@ -81,15 +107,20 @@ export default {
       console.log(res);
     },
     // 加载下一页
-    async pageDown() {
-      const res = await getRegionList(this.params);
-      console.log(res);
+    async getNextTaskService() {
+      if (this.flag) {
+        this.flag = false;
+        this.params.pageIndex++;
+        this.getRegionList();
+      }
     },
     // 加载上一页
-    async pageUp() {
-      if (this.upDisabled) return true;
-      const res = await getRegionList(this.params);
-      console.log(res);
+    async getLastTaskService() {
+      if (this.flag) {
+        this.flag = false;
+        this.params.pageIndex--;
+        this.getRegionList();
+      }
     },
     // 添加区域弹窗
     addDialog() {
@@ -99,6 +130,18 @@ export default {
     alterRegion(val) {
       this.addShowDialog = true;
       this.$refs.addRegion.getRegionId(val);
+      // console.log(val);
+    },
+    // 查看详情弹窗
+    async checkDialog(val) {
+      this.checkShowDialog = true;
+      // console.log(val);
+      const res = await checkRegionList(1, 10, val.id);
+      // console.log(res);
+      // 获取区域名称
+      this.checkListName = val.name;
+      // 传递详情数据
+      this.checkList = res.data;
     },
   },
 };
