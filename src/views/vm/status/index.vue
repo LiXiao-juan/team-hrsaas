@@ -41,10 +41,10 @@
         width="300"
       >
       </el-table-column>
-      <el-table-column prop="progressTotal" label="设备状态" width="300">
-        <el-tag>离线</el-tag>
-        <el-tag>货道</el-tag>
-        <el-tag>传动轴</el-tag>
+      <el-table-column prop="status" label="设备状态" width="300">
+        <el-tag class="true">离线</el-tag>
+        <el-tag class="false">货道</el-tag>
+        <el-tag class="false">传动轴</el-tag>
       </el-table-column>
       <el-table-column label="操作" width="100">
         <template slot-scope="scope">
@@ -66,6 +66,7 @@
       @pageDown="getVmList"
       @pageUp="getVmList"
     />
+    <FormDialog ref="dialog" />
   </div>
 </template>
 
@@ -73,12 +74,22 @@
 import InputField from "@/components/InputField";
 import CustomButton from "@/components/CustomButton";
 import Pagination from "@/components/Pagination";
+import FormDialog from "./components/FormDialog";
 import { getVmList } from "@/api/vm";
+import {
+  getOrderCount,
+  getOrderAmount,
+  getSupplyCount,
+  getRepairCount,
+  getSkuCollect,
+} from "@/api/vm-status";
+import dayjs from "dayjs";
 export default {
   components: {
     InputField,
     CustomButton,
     Pagination,
+    FormDialog,
   },
   data() {
     return {
@@ -89,6 +100,16 @@ export default {
       },
       /* 售货机列表 */
       vmList: [],
+      /* 获取当月时间 */
+      paramsMonth: {
+        start: dayjs().startOf("month").format("YYYY-MM-DD HH:mm:ss"),
+        end: dayjs().endOf("month").format("YYYY-MM-DD HH:mm:ss"),
+      },
+      /* 获取当月时间YYYY-MM-DD格式 */
+      paramsMonths: {
+        start: dayjs().startOf("month").format("YYYY-MM-DD"),
+        end: dayjs().endOf("month").format("YYYY-MM-DD"),
+      },
     };
   },
   created() {
@@ -132,9 +153,29 @@ export default {
     vmStatus(row, column, index) {
       return ["未投放", "运营", "", "撤机"][index];
     },
+    status(row, column, index) {
+      console.log(row, column, index);
+      return;
+    },
     /* 查看详情 */
-    viewDetails(index, row) {
-      // console.log(index, row);
+    async viewDetails(index, row) {
+      try {
+        this.paramsMonth.innerCode = row.innerCode;
+        this.paramsMonths.innerCode = row.innerCode;
+        const res = await getOrderCount(this.paramsMonth);
+        this.$refs.dialog.sales = res.data;
+        const amount = await getOrderAmount(this.paramsMonth);
+        this.$refs.dialog.amount = amount.data;
+        const supplyCount = await getSupplyCount(this.paramsMonths);
+        this.$refs.dialog.supplyCount = supplyCount.data;
+        const repairCount = await getRepairCount(this.paramsMonths);
+        this.$refs.dialog.repairCount = repairCount.data;
+        const skuCollect = await getSkuCollect(this.paramsMonths);
+        this.$refs.dialog.skuCollect = skuCollect.data;
+      } catch (error) {
+      } finally {
+        this.$refs.dialog.dialogTableVisible = true;
+      }
     },
   },
 };
@@ -164,5 +205,23 @@ export default {
       margin-left: 10px;
     }
   }
+}
+.true {
+  height: 23px;
+  padding: 0 12px;
+  background: #ff665f linear-gradient(135deg, #ffb043, #ffc020);
+  border-radius: 14px;
+  text-align: center;
+  color: #fff;
+  line-height: 23px;
+}
+.false {
+  height: 23px;
+  padding: 0 12px;
+  background: #ff665f linear-gradient(135deg, #3fc997, #4bda98);
+  border-radius: 14px;
+  text-align: center;
+  color: #fff;
+  line-height: 23px;
 }
 </style>
