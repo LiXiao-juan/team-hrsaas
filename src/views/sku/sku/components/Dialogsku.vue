@@ -12,36 +12,60 @@
       :rules="formRules"
     >
       <el-form-item label="商品名称:" prop="skuName">
-        <el-input placeholder="请输入" v-model="formData.skuName"></el-input>
+        <el-input
+          placeholder="请输入"
+          v-model="formData.skuName"
+          maxlength="15"
+          show-word-limit
+        ></el-input>
       </el-form-item>
       <el-form-item label="品牌:" prop="brandName">
-        <el-input placeholder="请输入" v-model="formData.brandName"></el-input>
+        <el-input
+          placeholder="请输入"
+          v-model="formData.brandName"
+          maxlength="10"
+          show-word-limit
+        ></el-input>
       </el-form-item>
       <el-form-item label="商品价格(元):" prop="price">
         <el-input-number
           controls-position="right"
           placeholder="请输入"
-          :min="1"
-          :max="1000"
-          v-model="formData.discount"
+          :min="0"
+          :max="10000"
+          v-model="formData.price"
         ></el-input-number>
       </el-form-item>
-      <el-form-item label="商品类型:" prop="className">
-        <el-select v-model="formData.className" placeholder="请选择">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+      <el-form-item label="商品类型:" prop="classId">
+        <el-select v-model="formData.classId" placeholder="请选择">
+          <el-option
+            v-for="item in goodsList"
+            :key="item.classId"
+            :label="item.className"
+            :value="item.classId"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="规格:" prop="unit">
-        <el-input placeholder="请输入" v-model="formData.unit"></el-input>
+        <el-input
+          placeholder="请输入"
+          v-model="formData.unit"
+          maxlength="10"
+          show-word-limit
+        ></el-input>
       </el-form-item>
       <el-form-item label="商品图片:" prop="skuImage">
         <el-upload
           class="upload-demo"
           drag
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
           action="https://jsonplaceholder.typicode.com/posts/"
           multiple
+          name="fileName"
         >
+          <img v-if="formData.skuImage" :src="formData.skuImage" />
           <i class="el-icon-upload"></i>
         </el-upload>
         <div class="el-upload__text">支持扩展名:jpg、png,文件不得大于100kb</div>
@@ -57,6 +81,7 @@
 </template>
 
 <script>
+import { editGoods, getAddGoods } from "@/api/sku";
 export default {
   data() {
     return {
@@ -64,10 +89,12 @@ export default {
         skuName: "", //商品名称
         brandName: "", //品牌
         price: "", //商品价格
-        className: "", //商品类型
+        classId: "", //商品类型
         unit: "", //规格
         skuImage: "", //商品图片
       },
+      id: "",
+      // goodsList: [],
       formRules: {
         skuName: [
           { required: true, message: "商品名称不能为空", trigger: "blur" },
@@ -75,14 +102,11 @@ export default {
         brandName: [
           { required: true, message: "品牌不能为空", trigger: "blur" },
         ],
-        price: [{ required: true, message: "价格不能为空", trigger: "change" }],
-        className: [
+        classId: [
           { required: true, message: "商品类型不能为空", trigger: "change" },
         ],
         unit: [{ required: true, message: "规格不能为空", trigger: "blur" }],
-        skuImage: [
-          { required: true, message: "商品图片不能为空", trigger: "change" },
-        ],
+        skuImage: [{ required: true, message: "商品图片不能为空" }],
       },
     };
   },
@@ -97,6 +121,9 @@ export default {
       type: Boolean,
       required: true,
     },
+    goodsList: {
+      type: Array,
+    },
   },
 
   created() {},
@@ -107,18 +134,57 @@ export default {
   },
 
   methods: {
+    //转换图片格式
+    handleAvatarSuccess(res, fileName) {
+      this.formData.skuImage = URL.createObjectURL(fileName.raw);
+    },
+    beforeAvatarUpload(fileName) {
+      const isJPG = fileName.type === "image/jpeg";
+      const isLt2M = fileName.size / 1024 / 1024 < 2;
+      if (!isJPG) {
+        this.$message.error("上传头像图片只能是 JPG 格式!");
+      }
+      if (!isLt2M) {
+        this.$message.error("上传头像图片大小不能超过 2MB!");
+      }
+      return isJPG && isLt2M;
+    },
     onClose() {
       this.$emit("update:visiable", false);
       // 重置表单
       this.$refs.form.resetFields();
       this.formData = {
-        policyName: "", //策略名称
-        discount: "", //策略方案
+        skuName: "", //商品名称
+        brandName: "", //品牌
+        price: "", //商品价格
+        classId: "", //商品类型
+        unit: "", //规格
+        skuImage: "", //商品图片
       };
     },
     async onSave() {
-      //   // 对整个表单进行校验的方法
+      // 对整个表单进行校验的方法
       await this.$refs.form.validate();
+      if (this.visiabledia) {
+        // await getUpload(fileName);
+        await editGoods(this.id, this.formData);
+        this.$message.success("修改商品成功");
+        this.onClose();
+        this.$emit("addSuccess");
+      } else {
+        // await getUpload(fileName);
+        await getAddGoods(this.formData);
+        this.$message.success("新增商品成功");
+        this.onClose();
+        this.$emit("addSuccess");
+      }
+    },
+    async getGoodsType(val) {
+      this.formData = val;
+      // const res = await getGoodsApi();
+      // // console.log(res);
+      // this.goodsList = res.data.currentPageRecords;
+      this.id = val.skuId;
     },
   },
 };
@@ -192,5 +258,8 @@ export default {
 ::v-deep .el-upload__text {
   font-size: 14px;
   color: #bac0cd;
+}
+::v-deep img {
+  height: 80px;
 }
 </style>

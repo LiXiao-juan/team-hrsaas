@@ -29,15 +29,15 @@
         </div></el-col
       >
     </el-row>
-    <el-table :data="tableData" border style="width: 100%">
-      <el-table-column prop="date" label="" width="116"> </el-table-column>
-      <el-table-column prop="name" label="总工单数" width="116">
+    <el-table :data="workCount" border style="width: 100%">
+      <el-table-column prop="date" label="" width="117"> </el-table-column>
+      <el-table-column prop="total" label="总工单数" width="117">
       </el-table-column>
-      <el-table-column prop="address" label="拒绝工单" width="116">
+      <el-table-column prop="cancelCount" label="拒绝工单" width="117">
       </el-table-column>
-      <el-table-column prop="address" label="完成工单" width="116">
+      <el-table-column prop="workCount" label="完成工单" width="117">
       </el-table-column>
-      <el-table-column prop="address" label="进行中工单" width="116">
+      <el-table-column prop="progressTotal" label="进行中工单" width="117">
       </el-table-column>
     </el-table>
   </el-dialog>
@@ -48,35 +48,19 @@ export default {
   data() {
     return {
       detailInfo: {},
-      tableData: [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
-        },
-      ],
       dialogTableVisible: false,
+      workCount: [],
     };
   },
+  created() {},
+  methods: {},
 };
 </script>
 
 <style lang="scss" scoped>
+::v-deep .el-dialog {
+  border-radius: 10px;
+}
 ::v-deep .el-dialog__header {
   border-bottom: none !important;
   padding: 20px;

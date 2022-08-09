@@ -13,7 +13,7 @@
     />
     <!-- 分页 -->
     <pagenation
-      :listIsShow="listIsShow"
+      :listIsShow="this.lastDisabled && this.rightDisabled"
       :taskList="regionData"
       v-if="regionData.totalCount"
       :lastDisabled="lastDisabled"
@@ -52,8 +52,6 @@ export default {
       addShowDialog: false, //控制添加弹窗
       checkShowDialog: false, //查看详情弹窗
       loading: false,
-      //节流阀,控制请求
-      flag: true,
       // 控制页数
       params: {
         pageIndex: 1,
@@ -73,10 +71,6 @@ export default {
   },
 
   computed: {
-    //控制列表数量显示隐藏
-    listIsShow() {
-      return !this.regionData.currentPageRecords?.[0];
-    },
     //控制上一页的按钮是否禁用
     lastDisabled() {
       return this.regionData.pageIndex <= 1;
@@ -96,7 +90,6 @@ export default {
       const res = await getRegionList(this.params);
       // console.log(res);
       this.regionData = res.data;
-      this.flag = true;
       this.loading = false;
     },
     // 区域搜索
@@ -108,19 +101,13 @@ export default {
     },
     // 加载下一页
     async getNextTaskService() {
-      if (this.flag) {
-        this.flag = false;
-        this.params.pageIndex++;
-        this.getRegionList();
-      }
+      this.params.pageIndex++;
+      this.getRegionList();
     },
     // 加载上一页
     async getLastTaskService() {
-      if (this.flag) {
-        this.flag = false;
-        this.params.pageIndex--;
-        this.getRegionList();
-      }
+      this.params.pageIndex--;
+      this.getRegionList();
     },
     // 添加区域弹窗
     addDialog() {

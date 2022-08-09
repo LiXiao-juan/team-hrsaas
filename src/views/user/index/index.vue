@@ -224,8 +224,8 @@ export default {
             status: false,
           };
         });
-        this.getRoleList();
-        this.getRegionList();
+        await this.getRoleList();
+        await this.getRegionList();
         const res = await getPersonnel(row.id);
         this.$refs.dialog.form = res.data;
         this.$refs.dialog.dialogFormVisible =

@@ -13,7 +13,7 @@
     />
     <!-- 分页区 -->
     <pagenation
-      :listIsShow="listIsShow"
+      :listIsShow="this.lastDisabled && this.rightDisabled"
       :taskList="nodeData"
       v-if="nodeData.totalCount"
       :lastDisabled="lastDisabled"
@@ -80,10 +80,6 @@ export default {
     this.getNodeList();
   },
   computed: {
-    //控制列表数量显示隐藏
-    listIsShow() {
-      return !this.nodeData.currentPageRecords?.[0];
-    },
     //控制上一页的按钮是否禁用
     lastDisabled() {
       return this.nodeData.pageIndex <= 1;
@@ -158,12 +154,11 @@ export default {
       // console.log(res);
     },
     // 点位查询
-    searchList(val){
-      this.params.name = val.name
-      this.params.regionId = val.regionId
-      this.getNodeList()
+    searchList(val) {
+      this.params.name = val.name;
+      this.params.regionId = val.regionId;
+      this.getNodeList();
     },
-    
   },
 };
 </script>

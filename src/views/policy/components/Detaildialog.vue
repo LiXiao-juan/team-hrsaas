@@ -24,10 +24,21 @@
         </el-table>
       </el-form-item>
     </el-form>
+    <!-- 分页 -->
+    <Pagination
+      :listIsShow="this.lastDisabled && this.rightDisabled"
+      :taskList="nodeData"
+      v-if="nodeData.totalCount"
+      :lastDisabled="lastDisabled"
+      :rightDisabled="rightDisabled"
+      @lastPage="getLastTaskService"
+      @nextPage="getNextTaskService"
+    />
   </el-dialog>
 </template>
 
 <script>
+import Pagination from "@/views/policy/components/pagination.vue";
 import { getVmList } from "@/api/policy";
 export default {
   data() {
@@ -38,6 +49,11 @@ export default {
         discount: "", //策略方案
       },
       gridData: [],
+      nodeData: {}, //主体内容数据
+      params: {
+        pageIndex: 1,
+        pageSize: 10,
+      },
     };
   },
   props: {
@@ -46,8 +62,23 @@ export default {
       required: true,
     },
   },
+  components: {
+    Pagination,
+  },
 
   created() {},
+  computed: {
+    //控制上一页的按钮是否禁用
+    lastDisabled() {
+      return this.nodeData.pageIndex <= 1;
+    },
+    //控制下一页的按钮是否禁用
+    rightDisabled() {
+      return (
+        this.nodeData.pageIndex == Math.ceil(this.nodeData.totalCount / 10)
+      );
+    },
+  },
 
   methods: {
     // 右上角关闭
@@ -56,10 +87,22 @@ export default {
     },
     // 根据策略获取
     async getDetail() {
-      const res = await getVmList(this.form.policyId);
+      const res = await getVmList(this.form.policyId, this.params);
       console.log(res);
       this.gridData = res.data.currentPageRecords;
+      this.nodeData = res.data;
     },
+    // 加载下一页
+    async getNextTaskService() {
+      this.params.pageIndex++;
+      this.getDetail();
+    },
+    // 加载上一页
+    async getLastTaskService() {
+      this.params.pageIndex--;
+      this.getDetail();
+    },
+    //获取当前点击行信息
     async getDetailRow(val) {
       this.form.policyName = val.policyName;
       this.form.discount = val.discount;
