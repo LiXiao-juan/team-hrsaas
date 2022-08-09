@@ -1,19 +1,9 @@
 <template>
   <div>
     <div class="search">
-      <el-form :inline="true" :model="formData" class="demo-form-inline">
-        <el-form-item label="点位搜索:">
-          <el-input v-model="formData.name" placeholder="请输入"></el-input>
-        </el-form-item>
-        <el-form-item label="区域搜索:">
-          <el-select v-model="formData.regionId" placeholder="请选择">
-            <el-option
-              v-for="item in regionlist"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+      <el-form :inline="true" class="demo-form-inline">
+        <el-form-item label="合作商搜索：">
+          <el-input v-model="ownerName" placeholder="请输入"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -33,25 +23,16 @@
 export default {
   data() {
     return {
-      formData: {
-        name: "",
-        regionId: "",
-      },
+      ownerName: "",
     };
-  },
-  props: {
-    regionlist: {
-      type: Array,
-    },
   },
 
   created() {},
 
   methods: {
     onSearch() {
-      this.formData.name = this.formData.name.trim()
-      this.formData.regionId = this.formData.regionId.trim()
-      this.$emit("onSearch", this.formData);
+      this.$emit("OnSearch", this.ownerName.trim());
+      this.$message.success("查询成功");
     },
   },
 };
