@@ -93,8 +93,8 @@
 
 <script>
 import { getNodeList } from "@/api/address";
-import { addNodeApi, searchNodeApi, editNodeApi } from "@/api/addressNode";
-import { regionData, CodeToText, TextToCode } from "element-china-area-data";
+import { addNodeApi,  editNodeApi } from "@/api/addressNode";
+import { regionData, CodeToText } from "element-china-area-data";
 export default {
   data() {
     // 点位名称校验
@@ -113,6 +113,7 @@ export default {
       isRepeat ? callback(new Error("点位名称重复")) : callback();
     };
     return {
+      dialogTitle: "新增点位", //标题
       addrList: regionData, //详细地址
       formData: {
         name: "", // 点位名称
@@ -191,10 +192,6 @@ export default {
     },
   },
   computed: {
-    // 判断标题
-    dialogTitle() {
-      return this.formData.id ? "修改点位" : "新增点位";
-    },
     // 合作商名称
     ownerNames() {
       const oN = this.ownerName.filter(
@@ -208,6 +205,7 @@ export default {
     onClose() {
       this.$emit("update:visible", false);
       this.$refs.form.resetFields(); //重置表单
+      this.dialogTitle = "新增点位";
       this.formData = {
         name: "", // 点位名称
         regionId: "", // 所在区域ID
@@ -259,22 +257,20 @@ export default {
     },
     // 获取点击的项的详情,数据回显
     async getNodeItem(val) {
-      this.$emit("editDilog");
-      const res = await searchNodeApi(1, 100, val.name);
-      const data = res.data.currentPageRecords[0];
-      this.formData.id = data.id;
-      this.formData.name = data.name;
-      this.formData.regionId = data.region.id;
-      this.formData.businessId = data.businessType.id;
-      this.formData.ownerId = data.ownerId;
-      const ac = data.addr.split("-");
-      const ab = [];
-      const a = TextToCode[ac[0]].code;
-      const b = TextToCode[ac[0]][ac[1]].code;
-      const c = TextToCode[ac[0]][ac[1]][ac[2]].code;
-      ab.push(a, b, c);
+      // 获取下拉列表数据
+      this.dialogTitle = "修改点位";
+      this.$emit("editDilog");      
+      this.formData.id = val.id;
+      this.formData.name = val.name;
+      this.formData.regionId = val.region.id;
+      this.formData.businessId = val.businessType.id;
+      this.formData.ownerId = val.ownerId;
+      const a = val.areaCode.substr(0,2) + '0000'
+      const b = val.areaCode.substr(0,4) + '00'     
+      const ab = [];      
+      ab.push(a, b, val.areaCode);
       this.formData.areaCode = ab;
-      this.formData.addr = ac[3];
+      this.formData.addr = val.addr;
       this.formData.createUserId = this.$store.state.user.token.userId;
       //   console.log(a);
       // this.formData.areaCode =

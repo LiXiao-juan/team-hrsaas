@@ -46,9 +46,7 @@ export default {
   data() {
     return {};
   },
-
   created() {},
-
   methods: {
     pageDown() {
       this.$emit("pageDown", "down");
