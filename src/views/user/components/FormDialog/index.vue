@@ -4,6 +4,7 @@
     :visible.sync="dialogFormVisible"
     width="630px"
     center:false
+    :close-on-click-modal="false"
   >
     <el-form :model="form" :rules="formRules" ref="form">
       <el-form-item :label-width="formLabelWidth" prop="userName"
@@ -55,12 +56,12 @@
         <template #label> 头像：</template>
         <el-upload
           class="avatar-uploader"
-          :action="upLoadUrl"
+          action="/api/vm-service/sku/fileUpload"
           :show-file-list="false"
-          :on-change="handleChange"
           :headers="{ Authorization: $store.state.user.token.token }"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
+          name="fileName"
         >
           <img v-if="form.image" :src="form.image" class="avatar" />
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -96,12 +97,9 @@ export default {
     title: {
       type: String,
     },
-    currentId: {
-      type: String,
-    },
+    currentId: {},
   },
   data() {
-    let params = new FormData();
     return {
       dialogFormVisible: false,
       form: {
@@ -151,20 +149,16 @@ export default {
         ],
       },
       formLabelWidth: "120px",
-      upLoadUrl: process.env.VUE_APP_BASE_API + "/vm-service/sku/fileUpload",
       imageFile: "",
     };
   },
   methods: {
-    handleChange(file, fileList) {
-      this.imageFile = file;
+    handleAvatarSuccess(res, fileName) {
+      this.form.image = URL.createObjectURL(fileName.raw);
     },
-    handleAvatarSuccess(res, file) {
-      this.image = URL.createObjectURL(file.raw);
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      const isLt2M = file.size / 1024 / 1024 < 2;
+    beforeAvatarUpload(fileName) {
+      const isJPG = fileName.type === "image/jpeg";
+      const isLt2M = fileName.size / 1024 / 1024 < 2;
 
       if (!isJPG) {
         this.$message.error("上传头像图片只能是 JPG 格式!");
@@ -184,7 +178,9 @@ export default {
         } else {
           await addPersonnel(this.form);
         }
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
       this.dialogFormVisible = false;
     },
   },
@@ -241,6 +237,7 @@ export default {
       }
       .el-upload {
         text-align: left;
+        height: 86px;
       }
       .el-upload__tip {
         line-height: 1.15;
