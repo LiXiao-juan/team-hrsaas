@@ -255,12 +255,12 @@ export default {
     // 数据重现
     repeatData(info) {
       setTimeout(() => {
-        // console.log(info);
+        console.log(info);
         this.formData.innerCode = info.innerCode;
         // this.formData.productType = info.productType;
         this.formData.desc = info.desc;
         this.formData.userId = info.userId;
-        this.typeName = "123";
+        // this.typeName = "123";
         this.getSupplyAlertValue();
         this.getPeople();
         this.getTaskType();

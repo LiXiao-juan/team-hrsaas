@@ -9,6 +9,7 @@ export default {
     taskList: [],
     taskDetails: {},
     device: {},
+    goodsInfo: '',
   },
   mutations: {
     SETTASKLIST(state, payload) {
@@ -21,6 +22,9 @@ export default {
     },
     SETDEVICE(state, payload) {
       state.device = payload;
+    },
+    SETGOODSINFO(state, payload) {
+      state.goodsInfo = payload;
     },
   },
   actions: {

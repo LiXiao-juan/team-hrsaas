@@ -75,7 +75,6 @@ export const getVmPolicyList = (params) => {
   });
 };
 
-
 /**
  * 应用策略
  * @returns  Promise
@@ -84,6 +83,67 @@ export const setVmPolicy = (data) => {
   return request({
     url: "/vm-service/vm/applyPolicy",
     method: "PUT",
-    data
+    data,
+  });
+};
+
+/**
+ *  售货机类型列表(搜索)
+ * @param {*} params
+ * @returns
+ */
+export const getVmType = (params) => {
+  return request({
+    url: "/vm-service/vmType/search",
+    method: "GET",
+    params,
+  });
+};
+
+/**
+ *  新增售货机
+ * @param {*} data
+ * @returns  Promise
+ */
+export const addVmService = (data) => {
+  return request({
+    url: "/vm-service/vm",
+    method: "POST",
+    data,
+  });
+};
+
+/**
+ *  售货机类型详情
+ * @param {*} typeId 类型Id
+ * @returns  Promise
+ */
+export const vmTypeInfo = (typeId) => {
+  return request({
+    url: `/vm-service/vmType/${typeId}`,
+  });
+};
+
+
+/**
+ *  获取售货机货道详情
+ * @param {*} innerCode 
+ * @returns  Promise
+ */
+export const getVmInfo = (innerCode) => {
+  return request({
+    url: `/vm-service/channel/channelList/${innerCode}`,
+  });
+};
+
+
+/**
+ *  获取区域
+ * @param {*} businessId 
+ * @returns 
+ */
+export const getArea = (businessId) => {
+  return request({
+    url: `/vm-service/businessType/name/${businessId}`,
   });
 };
