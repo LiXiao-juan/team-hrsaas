@@ -31,6 +31,7 @@
       :visible.sync="goodShowDialog"
       :goodData="goodData"
       @sort="showSort"
+      @delGoods="delGoods"
     />
 
     <!-- 智能排货 -->
@@ -68,6 +69,7 @@ export default {
       typeList: [],
       addressList: [],
       sortShowDialog: false,
+      goodsList: [],
     };
   },
   created() {
@@ -112,13 +114,15 @@ export default {
     },
     // 货道
     async showGoods(val) {
-      this.$store.state.tickets
+      this.$store.state.tickets;
       // 发起货道信息
       const { data } = await vmTypeInfo(val.type.typeId);
       // 发起获取所有货物的请求
       const res = await getVmInfo(val.innerCode);
       // 赋值数据传递给子组件
       this.goodData = data;
+      this.goodsList = res.data;
+      console.log(this.goodsList);
       this.$refs.goodSetting.setGoodsList(res.data);
       // 弹框显示
       this.goodShowDialog = true;
@@ -136,6 +140,12 @@ export default {
     // 智能排货弹框
     showSort() {
       this.sortShowDialog = true;
+    },
+    // 删除商品列表更改数据
+    delGoods(val) {
+      // console.log(val);  
+      const ind = this.goodsList.indexOf(val);
+      console.log(ind);
     },
 
     // 展示新增
