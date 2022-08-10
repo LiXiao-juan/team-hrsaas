@@ -5,7 +5,7 @@
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
         <el-form-item label="订单编号:">
           <el-input
-            v-model="formInline.user"
+            v-model="formInline.order"
             placeholder="请输入订单编号"
             clearable
           ></el-input>
@@ -98,9 +98,10 @@ export default {
   data() {
     return {
       formInline: {
-        user: "",
+        order: "",
+        // value: [],
       },
-      value: "",
+      value: [],
       tableData: [],
       searchDetail: {
         pageIndex: 1,
@@ -167,7 +168,10 @@ export default {
       return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
     },
     SesrchFn() {
-      this.searchDetail.orderNo = this.formInline.user;
+      this.searchDetail.orderNo = this.formInline.order;
+      this.searchDetail.startDate = this.value[0];
+      this.searchDetail.endDate = this.value[1];
+      this.SearchOrder(this.searchDetail);
     },
     Price(row, column, index) {
       return index / 100;
