@@ -200,7 +200,10 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
-      value1: "",
+      value1: [
+        dayjs().startOf("week").format("YYYY-MM-DD HH:mm:ss"),
+        dayjs().endOf("day").format("YYYY-MM-DD HH:mm:ss"),
+      ],
       paramsRegion: {
         pageIndex: 1,
         pageSize: 100000,

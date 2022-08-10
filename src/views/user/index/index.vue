@@ -10,13 +10,14 @@
     </div>
     <div class="business-result">
       <CustomButton
-        iconType="el-icon-circle-plus-outline"
         :styles="newButton"
-        @click.native="addInfo"
+        iconType="el-icon-circle-plus-outline"
+        @click="addInfo"
         >新建</CustomButton
       >
     </div>
     <el-table
+      v-loading="loading"
       :data="personnelListData.currentPageRecords"
       style="width: 100%; padding-left: 17px; padding-right: 17px"
       :cell-style="{ padding: '3px 0px ', border: 0 }"
@@ -96,6 +97,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       /* 新建按钮样式 */
       newButton: {
         backgroundColor: "#ff7d33",
@@ -136,6 +138,7 @@ export default {
     /* 获取人员列表 */
     async getPersonnelList(val) {
       try {
+        this.loading = true;
         if (val === "down") {
           this.params.pageIndex = parseInt(this.params.pageIndex) + 1;
           const res = await getPersonnelList(this.params);
@@ -162,6 +165,8 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loading = false;
       }
     },
     table_index(index) {
@@ -190,23 +195,26 @@ export default {
       } catch (error) {}
     },
     /* 新增人员信息 */
-    addInfo() {
-      this.title = "新增人员";
-      this.getRoleList();
-      this.getRegionList();
-      this.$nextTick(() => {
-        this.$refs.dialog.form = {
-          userName: "",
-          roleId: "",
-          mobile: "",
-          regionId: "",
-          regionName: "",
-          image: "",
-          status: false,
-        };
-      });
-      this.$refs.dialog.dialogFormVisible =
-        !this.$refs.dialog.dialogFormVisible;
+    async addInfo() {
+      try {
+        this.title = "新增人员";
+        this.$nextTick(() => {
+          this.$refs.dialog.form = {
+            userName: "",
+            roleId: "",
+            mobile: "",
+            regionId: "",
+            regionName: "",
+            image: "",
+            status: false,
+          };
+          this.$refs.dialog.$refs.form.resetFields();
+        });
+        await this.getRoleList();
+        await this.getRegionList();
+        this.$refs.dialog.dialogFormVisible =
+          !this.$refs.dialog.dialogFormVisible;
+      } catch (error) {}
     },
     /* 编辑人员信息回显 */
     async editInfo(index, row) {

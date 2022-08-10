@@ -9,6 +9,7 @@
       >
     </div>
     <el-table
+      v-loading="loading"
       :data="vmList.currentPageRecords"
       style="
         width: 100%;
@@ -93,6 +94,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       /* 获取列表所需参数 */
       params: {
         pageIndex: 1,
@@ -122,6 +124,7 @@ export default {
     /* 搜索售货机(售货机列表) */
     async getVmList(val) {
       try {
+        this.loading = true;
         if (val === "down") {
           this.params.pageIndex = parseInt(this.params.pageIndex) + 1;
           const res = await getVmList(this.params);
@@ -147,6 +150,8 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loading = false;
       }
     },
     /* 运营状态格式化 */

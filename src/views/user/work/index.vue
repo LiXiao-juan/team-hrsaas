@@ -10,6 +10,7 @@
       >
     </div>
     <el-table
+      v-loading="loading"
       :data="userWorkListData.currentPageRecords"
       style="
         width: 100%;
@@ -84,6 +85,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       /* 角色列表 */
       roleList: [],
       /* 获取列表所需参数 */
@@ -128,6 +130,7 @@ export default {
     /* 获取工作量列表 */
     async getUserWorkList(val) {
       try {
+        this.loading = true;
         if (val === "down") {
           this.params.pageIndex = parseInt(this.params.pageIndex) + 1;
           const res = await getUserWorkList(this.params);
@@ -154,6 +157,8 @@ export default {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        this.loading = false;
       }
     },
     table_index(index) {

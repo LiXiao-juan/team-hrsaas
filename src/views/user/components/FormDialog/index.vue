@@ -5,6 +5,7 @@
     width="630px"
     center:false
     :close-on-click-modal="false"
+    @close="cancel"
   >
     <el-form :model="form" :rules="formRules" ref="form">
       <el-form-item :label-width="formLabelWidth" prop="userName"
@@ -175,16 +176,14 @@ export default {
       try {
         if (this.title === "编辑人员") {
           await editPersonnel(this.currentId, this.form);
-          await this.$refs.form.clearValidate();
+          this.cancel();
           this.$message.success("修改信息成功");
         } else {
+          this.cancel();
           await addPersonnel(this.form);
-          await this.$refs.form.clearValidate();
         }
       } catch (error) {
         console.log(error);
-      } finally {
-        this.dialogFormVisible = false;
       }
     },
     cancel() {

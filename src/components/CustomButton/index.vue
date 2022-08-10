@@ -5,6 +5,7 @@
       :icon="iconType"
       class="search-btn"
       :style="styles"
+      @click="$emit('click')"
     >
       <slot></slot>
     </el-button>
@@ -15,20 +16,20 @@
 export default {
   props: {
     iconType: {
-      type: String
+      type: String,
     },
     styles: {
-      type: Object
-    }
+      type: Object,
+    },
   },
   data() {
-    return {}
+    return {};
   },
 
   created() {},
 
-  methods: {}
-}
+  methods: {},
+};
 </script>
 
 <style scoped>
