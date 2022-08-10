@@ -106,7 +106,6 @@ export default {
       searchDetail: {
         pageIndex: 1,
         pageSize: 10,
-        orderNo: "",
         startDate: "",
         endDate: "",
       },
@@ -167,11 +166,13 @@ export default {
     dateFn(row, column, index) {
       return dayjs(index).format("YYYY-MM-DD HH:mm:ss");
     },
-    SesrchFn() {
+    async SesrchFn() {
       this.searchDetail.orderNo = this.formInline.order;
-      this.searchDetail.startDate = this.value[0];
-      this.searchDetail.endDate = this.value[1];
-      this.SearchOrder(this.searchDetail);
+      this.searchDetail.startDate = dayjs(this.value[0]).format("YYYY-MM-DD");
+      this.searchDetail.endDate = dayjs(this.value[1]).format("YYYY-MM-DD");
+      const { data } = await getSearchOrder(this.searchDetail);
+      console.log(data);
+      this.tableData = data.currentPageRecords;
     },
     Price(row, column, index) {
       return index / 100;
