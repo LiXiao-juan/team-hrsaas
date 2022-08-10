@@ -126,7 +126,7 @@ export default {
 
 <style lang="scss" scoped>
 .app-container {
-  // background: url("../../assets/end.png");
+  background: url("../../assets/end.png");
   min-height: 890px;
   background-size: contain;
   .box-info {
@@ -153,7 +153,7 @@ export default {
         height: 100%;
         background-color: skyblue;
         border-radius: 20px;
-        // background: url('../../assets/it.png') no-repeat center center;
+        background: url('../../assets/it.png') no-repeat center center;
       }
     }
 
