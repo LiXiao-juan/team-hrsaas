@@ -74,12 +74,9 @@
                 v-model="formData.dateArr"
                 type="daterange"
                 range-separator="~"
-                :start-placeholder="start"
-                :end-placeholder="end"
                 format="yyyy-MM-dd"
                 value-format="yyyy-MM-dd HH:mm:ss"
                 :default-time="['00:00:00', '23:59:59']"
-                :picker-options="pickerOptions"
               >
                 >
               </el-date-picker>
@@ -229,7 +226,7 @@ export default {
   .report {
     margin-left: 20px;
   }
-  .label{
+  .label {
     margin-left: 18px;
   }
 }
